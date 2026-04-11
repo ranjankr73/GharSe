@@ -9,24 +9,12 @@ const ShopLoginPage: React.FC = () => {
                 <img
                     src="/images/shop-login.jpg"
                     alt="Shop Login"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover p-2 rounded-4xl"
                 />
 
                 {/* Gradient Overlay (better than black) */}
-                <div className="absolute inset-0 bg-linear-to-b from-black/60 via-black/40 to-black/70 flex flex-col justify-between p-8 text-white">
+                <div className="absolute inset-0 bg-linear-to-b  flex flex-col justify-between p-8 text-white">
                     <Logo />
-
-                    <div className="space-y-3 max-w-sm">
-                        <h1 className="text-4xl font-bold leading-tight">
-                            Run your shop
-                            <br />
-                            like a pro 🚀
-                        </h1>
-                        <p className="text-sm text-gray-200">
-                            Accept orders, manage deliveries, and grow faster
-                            with GharSe.
-                        </p>
-                    </div>
 
                     <p className="text-xs text-gray-300">
                         © {new Date().getFullYear()} GharSe
