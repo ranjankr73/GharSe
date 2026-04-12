@@ -11,12 +11,12 @@ import { OrderSuccessPage, OrderTrackingPage } from './pages/customer/OrderPages
 import OrderHistoryPage from './pages/customer/OrderHistoryPage';
 
 // Admin Pages
-import ShopLoginPage from './pages/admin/ShopLoginPage';
-import ShopDashboard from './pages/admin/ShopDashboardPage';
-import AdminOrdersPage from './pages/admin/ShopOrdersPage';
-import AdminProductsPage from './pages/admin/ShopProductsPage';
-import AdminCategoriesPage from './pages/admin/ShopCategoriesPage';
-import AdminSettingsPage from './pages/admin/AdminSettingsPage';
+import ShopLoginPage from './pages/shop/ShopLoginPage';
+import ShopDashboard from './pages/shop/ShopDashboardPage';
+import AdminOrdersPage from './pages/shop/ShopOrdersPage';
+import AdminProductsPage from './pages/shop/ShopProductsPage';
+import AdminCategoriesPage from './pages/shop/ShopCategoriesPage';
+import AdminSettingsPage from './pages/shop/ShopSettingsPage';
 import ShopDashboardLayout from './components/layout/ShopDashboardLayout';
 
 // ─── Protected Route ──────────────────────────────────────────────────────────
