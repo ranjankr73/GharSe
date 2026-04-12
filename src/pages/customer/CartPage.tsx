@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { selectCartItems, selectCartTotal, clearCart } from '../../redux/slices/cartSlice';
 import CartItem from '../../components/customer/CartItem';
-import { CustomerNav } from '../../components/layout';
+import CustomerNavbar from '../../components/layout/CustomerNavbar';
 import EmptyState from '../../components/ui/EmptyState';
 import Button from '../../components/ui/Button';
 import { formatCurrency } from '../../utils';
@@ -39,7 +39,7 @@ const CartPage: React.FC = () => {
           description="Add items from the shop to get started."
           action={<Button onClick={() => navigate('/shop/shop-001')} variant="primary">Browse Shop</Button>}
         />
-        <CustomerNav />
+        <CustomerNavbar />
       </div>
     );
   }
@@ -114,7 +114,7 @@ const CartPage: React.FC = () => {
         </div>
       </div>
 
-      <CustomerNav />
+      <CustomerNavbar />
     </div>
   );
 };

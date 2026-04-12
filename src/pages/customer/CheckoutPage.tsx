@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { createOrder } from '../../redux/slices/orderSlice';
 import { clearCart, selectCartItems, selectCartTotal } from '../../redux/slices/cartSlice';
-import { CustomerNav } from '../../components/layout';
+import CustomerNavbar from '../../components/layout/CustomerNavbar';
 import InputField from '../../components/ui/InputField';
 import TextareaField from '../../components/ui/TextareaField';
 import Button from '../../components/ui/Button';
@@ -200,7 +200,7 @@ const CheckoutPage: React.FC = () => {
         </div>
       </div>
 
-      <CustomerNav />
+      <CustomerNavbar />
     </div>
   );
 };

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { fetchOrder } from '../../redux/slices/orderSlice';
-import { CustomerNav } from '../../components/layout';
+import CustomerNavbar from '../../components/layout/CustomerNavbar';
 import StepTracker from '../../components/ui/StepTracker';
 import Skeleton from '../../components/ui/Skeleton';
 import StatusBadge from '../../components/ui/StatusBadge';
@@ -200,7 +200,7 @@ export const OrderTrackingPage: React.FC = () => {
         ) : null}
       </div>
 
-      <CustomerNav />
+      <CustomerNavbar />
     </div>
   );
 };

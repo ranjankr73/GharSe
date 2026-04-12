@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { fetchOrders } from '../../redux/slices/orderSlice';
 import { addItem } from '../../redux/slices/cartSlice';
-import { CustomerNav } from '../../components/layout';
+import CustomerNavbar from '../../components/layout/CustomerNavbar';
 import { OrderCard } from '../../components/customer/OrderCard';
 import EmptyState from '../../components/ui/EmptyState';
 import Skeleton from '../../components/ui/Skeleton';
@@ -69,7 +69,7 @@ const OrderHistoryPage: React.FC = () => {
         )}
       </div>
 
-      <CustomerNav />
+      <CustomerNavbar />
     </div>
   );
 };
