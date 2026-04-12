@@ -1,18 +1,23 @@
-interface InputFieldProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+interface Option {
   label: string;
+  value: string;
+}
+
+interface SelectFieldProps
+  extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  label: string;
+  options: Option[];
   error?: string;
   hint?: string;
-  icon?: React.ReactNode;
   required?: boolean;
 }
 
-const InputField: React.FC<InputFieldProps> = ({
+const SelectField: React.FC<SelectFieldProps> = ({
   label,
-  required = false,
+  options,
   error,
   hint,
-  icon,
+  required,
   className = "",
   ...props
 }) => {
@@ -22,32 +27,24 @@ const InputField: React.FC<InputFieldProps> = ({
       {/* Label */}
       <label className="text-sm font-medium text-gray-700">
         {label}
-        {required && <span className="text-red-500 ml-0.5">*</span>}
+        {required && (
+          <span className="text-red-500 ml-0.5">*</span>
+        )}
       </label>
 
-      {/* Input Wrapper */}
+      {/* Select */}
       <div className="relative">
-        
-        {/* Icon */}
-        {icon && (
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">
-            {icon}
-          </span>
-        )}
-
-        {/* Input */}
-        <input
+        <select
           className={`
-            w-full rounded-xl bg-gray-50
-            border border-gray-200
+            w-full rounded-xl
+            bg-gray-50 border border-gray-200
             px-4 py-2.5 text-sm text-gray-800
-            placeholder-gray-400
+            appearance-none
 
             transition-all duration-200
             focus:outline-none focus:bg-white
             focus:ring-2 focus:ring-red-400 focus:border-red-400
 
-            ${icon ? "pl-10" : ""}
             ${
               error
                 ? "border-red-400 focus:ring-red-300 focus:border-red-400"
@@ -57,7 +54,22 @@ const InputField: React.FC<InputFieldProps> = ({
             ${className}
           `}
           {...props}
-        />
+        >
+          <option value="" disabled>
+            Select an option
+          </option>
+
+          {options.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+
+        {/* Dropdown Icon */}
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none">
+          ▼
+        </span>
       </div>
 
       {/* Error */}
@@ -77,4 +89,4 @@ const InputField: React.FC<InputFieldProps> = ({
   );
 };
 
-export default InputField;
+export default SelectField;

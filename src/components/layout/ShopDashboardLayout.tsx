@@ -137,7 +137,7 @@ const ShopDashboardLayout: React.FC<Props> = ({ children, title }) => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-100"
+              className="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-100 cursor-pointer"
             >
               ☰
             </button>

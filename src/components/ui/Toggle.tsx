@@ -12,7 +12,7 @@ const Toggle: React.FC<ToggleProps> = ({
   return (
     <label className="flex items-center gap-3 cursor-pointer select-none">
       
-      {/* Hidden checkbox (for accessibility) */}
+      {/* Controlled input */}
       <input
         type="checkbox"
         checked={checked}
@@ -20,9 +20,8 @@ const Toggle: React.FC<ToggleProps> = ({
         className="sr-only"
       />
 
-      {/* Toggle Track */}
+      {/* Track */}
       <div
-        onClick={() => onChange(!checked)}
         className={`
           relative w-11 h-6 rounded-full
           transition-all duration-300
@@ -36,7 +35,7 @@ const Toggle: React.FC<ToggleProps> = ({
             w-5 h-5 rounded-full bg-white
             shadow-sm
             transition-all duration-300
-            ${checked ? "translate-x-5" : "translate-x-0"}
+            ${checked ? "translate-x-5" : ""}
           `}
         />
       </div>

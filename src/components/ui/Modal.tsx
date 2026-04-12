@@ -52,7 +52,7 @@ const Modal: React.FC<ModalProps> = ({
               rounded-full
               hover:bg-red-50 hover:text-red-500
               text-gray-400
-              transition
+              transition cursor-pointer
             "
           >
             ✕
