@@ -173,26 +173,7 @@ export const Toggle: React.FC<ToggleProps> = ({ checked, onChange, label }) => (
 );
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
-interface StatCardProps {
-  label: string;
-  value: string;
-  icon: string;
-  trend?: string;
-  color?: string;
-}
 
-export const StatCard: React.FC<StatCardProps> = ({ label, value, icon, trend, color = 'bg-brand-50' }) => (
-  <div className={`rounded-2xl p-5 ${color} border border-white shadow-card`}>
-    <div className="flex items-start justify-between">
-      <div>
-        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{label}</p>
-        <p className="text-2xl font-display font-bold text-slate-900 mt-1">{value}</p>
-        {trend && <p className="text-xs text-green-600 font-semibold mt-1">{trend}</p>}
-      </div>
-      <div className="text-3xl">{icon}</div>
-    </div>
-  </div>
-);
 
 // ─── Modal ────────────────────────────────────────────────────────────────────
 interface ModalProps {

@@ -12,11 +12,12 @@ import OrderHistoryPage from './pages/customer/OrderHistoryPage';
 
 // Admin Pages
 import ShopLoginPage from './pages/admin/ShopLoginPage';
-import AdminDashboard from './pages/admin/AdminDashboard';
+import ShopDashboard from './pages/admin/ShopDashboard';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage';
 import AdminProductsPage from './pages/admin/AdminProductsPage';
 import AdminCategoriesPage from './pages/admin/AdminCategoriesPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
+import ShopDashboardLayout from './components/layout/ShopDashboardLayout';
 
 // ─── Protected Route ──────────────────────────────────────────────────────────
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -61,11 +62,11 @@ const App: React.FC = () => {
 
         {/* ─── Admin Routes ────────────────────────────── */}
         <Route path="/admin/login" element={<ShopLoginPage />} />
-        <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-        <Route path="/admin/orders" element={<ProtectedRoute><AdminOrdersPage /></ProtectedRoute>} />
-        <Route path="/admin/products" element={<ProtectedRoute><AdminProductsPage /></ProtectedRoute>} />
-        <Route path="/admin/categories" element={<ProtectedRoute><AdminCategoriesPage /></ProtectedRoute>} />
-        <Route path="/admin/settings" element={<ProtectedRoute><AdminSettingsPage /></ProtectedRoute>} />
+        <Route path="/admin/dashboard" element={<ProtectedRoute><ShopDashboardLayout title='Dashboard'><ShopDashboard /></ShopDashboardLayout></ProtectedRoute>} />
+        <Route path="/admin/orders" element=  {<ProtectedRoute><ShopDashboardLayout title='Orders'><AdminOrdersPage /></ShopDashboardLayout></ProtectedRoute>} />
+        <Route path="/admin/products" element={<ProtectedRoute><ShopDashboardLayout title='Products'><AdminProductsPage /></ShopDashboardLayout></ProtectedRoute>} />
+        <Route path="/admin/categories" element={<ProtectedRoute><ShopDashboardLayout title='Categories'><AdminCategoriesPage /></ShopDashboardLayout></ProtectedRoute>} />
+        <Route path="/admin/settings" element={<ProtectedRoute><ShopDashboardLayout title='Settings'><AdminSettingsPage /></ShopDashboardLayout></ProtectedRoute>} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
