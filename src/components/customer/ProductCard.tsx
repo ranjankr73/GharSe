@@ -133,7 +133,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               
               <button
                 onClick={handleDecrease}
-                className="w-7 h-7 rounded-lg bg-red-500 text-white text-sm flex items-center justify-center active:scale-90"
+                className="w-7 h-7 rounded-lg bg-red-500 text-white text-sm flex items-center justify-center active:scale-90 cursor-pointer"
               >
                 −
               </button>
@@ -144,7 +144,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
               <button
                 onClick={handleIncrease}
-                className="w-7 h-7 rounded-lg bg-red-500 text-white text-sm flex items-center justify-center active:scale-90"
+                className="w-7 h-7 rounded-lg bg-red-500 text-white text-sm flex items-center justify-center active:scale-90 cursor-pointer"
               >
                 +
               </button>
@@ -155,7 +155,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               disabled={!product.inStock}
               className={`
                 text-xs font-semibold px-4 py-2 rounded-xl
-                transition active:scale-95
+                transition active:scale-95 cursor-pointer
                 ${
                   product.inStock
                     ? "bg-red-500 text-white hover:bg-red-600"
