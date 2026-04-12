@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { fetchOrders } from "../../redux/slices/orderSlice";
-import { StatusBadge } from "../../components/ui";
+import StatusBadge from "../../components/ui/StatusBadge";
 import {
     formatCurrency,
     formatTimeAgo,

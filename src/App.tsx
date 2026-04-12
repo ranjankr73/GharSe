@@ -12,8 +12,8 @@ import OrderHistoryPage from './pages/customer/OrderHistoryPage';
 
 // Admin Pages
 import ShopLoginPage from './pages/admin/ShopLoginPage';
-import ShopDashboard from './pages/admin/ShopDashboard';
-import AdminOrdersPage from './pages/admin/AdminOrdersPage';
+import ShopDashboard from './pages/admin/ShopDashboardPage';
+import AdminOrdersPage from './pages/admin/ShopOrdersPage';
 import AdminProductsPage from './pages/admin/AdminProductsPage';
 import AdminCategoriesPage from './pages/admin/AdminCategoriesPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';

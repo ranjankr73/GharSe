@@ -93,27 +93,6 @@ export const TextareaField: React.FC<TextareaFieldProps> = ({ label, error, clas
   </div>
 );
 
-// ─── StatusBadge ──────────────────────────────────────────────────────────────
-import { ORDER_STATUS_CONFIG } from '../../utils';
-import type { OrderStatus } from '../../types';
-
-interface StatusBadgeProps {
-  status: OrderStatus;
-  size?: 'sm' | 'md';
-}
-
-export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'md' }) => {
-  const cfg = ORDER_STATUS_CONFIG[status];
-  return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full font-semibold
-      ${cfg.color} ${cfg.bg}
-      ${size === 'sm' ? 'text-xs px-2 py-0.5' : 'text-xs px-3 py-1'}`}>
-      <span className="w-1.5 h-1.5 rounded-full bg-current opacity-70" />
-      {cfg.label}
-    </span>
-  );
-};
-
 // ─── Skeleton Loader ──────────────────────────────────────────────────────────
 export const Skeleton: React.FC<{ className?: string }> = ({ className = '' }) => (
   <div className={`animate-pulse bg-slate-200 rounded-xl ${className}`} />
@@ -171,9 +150,6 @@ export const Toggle: React.FC<ToggleProps> = ({ checked, onChange, label }) => (
     {label && <span className="text-sm font-semibold text-slate-700">{label}</span>}
   </label>
 );
-
-// ─── Stat Card ────────────────────────────────────────────────────────────────
-
 
 // ─── Modal ────────────────────────────────────────────────────────────────────
 interface ModalProps {
