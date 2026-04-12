@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { fetchOrders } from '../../redux/slices/orderSlice';
-import { AdminLayout } from '../../components/layout';
+import ShopDashboardLayout from '../../components/layout/ShopDashboardLayout';
 import { StatCard, StatusBadge } from '../../components/ui';
 import { formatCurrency, formatTimeAgo, ORDER_STATUS_CONFIG } from '../../utils';
 
@@ -37,7 +37,7 @@ const AdminDashboard: React.FC = () => {
   );
 
   return (
-    <AdminLayout title="Dashboard">
+    <ShopDashboardLayout title="Dashboard">
       {/* Welcome banner */}
       <div className="bg-linear-to-r from-brand-500 to-brand-600 rounded-2xl p-6 text-white mb-6 shadow-brand">
         <div className="flex items-center justify-between">
@@ -130,7 +130,7 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
       </div>
-    </AdminLayout>
+    </ShopDashboardLayout>
   );
 };
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { fetchShop, updateShop } from '../../redux/slices/shopSlice';
-import { AdminLayout } from '../../components/layout';
+import ShopDashboardLayout from '../../components/layout/ShopDashboardLayout';
 import { InputField, Button, Toggle } from '../../components/ui';
 import toast from 'react-hot-toast';
 
@@ -65,16 +65,16 @@ const AdminSettingsPage: React.FC = () => {
 
   if (loading && !shop) {
     return (
-      <AdminLayout title="Settings">
+      <ShopDashboardLayout title="Settings">
         <div className="space-y-4 animate-pulse">
           {Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-16 bg-white rounded-2xl" />)}
         </div>
-      </AdminLayout>
+      </ShopDashboardLayout>
     );
   }
 
   return (
-    <AdminLayout title="Settings">
+    <ShopDashboardLayout title="Settings">
       <div className="max-w-2xl space-y-6">
         {/* Shop Status */}
         <div className="bg-white rounded-2xl shadow-card p-6">
@@ -147,7 +147,7 @@ const AdminSettingsPage: React.FC = () => {
           </Button>
         </div>
       </div>
-    </AdminLayout>
+    </ShopDashboardLayout>
   );
 };
 

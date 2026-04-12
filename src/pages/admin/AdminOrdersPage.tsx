@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { fetchOrders, updateOrderStatus } from '../../redux/slices/orderSlice';
-import { AdminLayout } from '../../components/layout';
 import { StatusBadge } from '../../components/ui';
 import { formatCurrency, formatTimeAgo } from '../../utils';
 import type { Order, OrderStatus } from '../../types';
 import toast from 'react-hot-toast';
+import ShopDashboardLayout from '../../components/layout/ShopDashboardLayout';
 
 const STATUS_ACTIONS: { status: OrderStatus; label: string; color: string }[] = [
   { status: 'accepted', label: '✅ Accept', color: 'bg-green-500 text-white hover:bg-green-600' },
@@ -58,7 +58,7 @@ const AdminOrdersPage: React.FC = () => {
   ];
 
   return (
-    <AdminLayout title="Orders">
+    <ShopDashboardLayout title="Orders">
       {/* Filter tabs */}
       <div className="flex gap-2 overflow-x-auto pb-2 mb-5 scrollbar-hide">
         {filterTabs.map((tab) => (
@@ -185,7 +185,7 @@ const AdminOrdersPage: React.FC = () => {
           })}
         </div>
       )}
-    </AdminLayout>
+    </ShopDashboardLayout>
   );
 };
 

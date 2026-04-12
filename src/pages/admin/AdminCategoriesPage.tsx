@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { fetchProducts, createCategory, deleteCategory } from '../../redux/slices/productSlice';
-import { AdminLayout } from '../../components/layout';
+import ShopDashboardLayout from '../../components/layout/ShopDashboardLayout';
 import { Modal, Button, InputField, EmptyState } from '../../components/ui';
 import toast from 'react-hot-toast';
 
@@ -51,7 +51,7 @@ const AdminCategoriesPage: React.FC = () => {
   };
 
   return (
-    <AdminLayout title="Categories">
+    <ShopDashboardLayout title="Categories">
       <div className="flex justify-between items-center mb-5">
         <p className="text-slate-500 text-sm">{categories.length} categories</p>
         <Button onClick={() => setModalOpen(true)} variant="primary" icon={<span>+</span>}>
@@ -110,7 +110,7 @@ const AdminCategoriesPage: React.FC = () => {
           </div>
         </div>
       </Modal>
-    </AdminLayout>
+    </ShopDashboardLayout>
   );
 };
 

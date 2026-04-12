@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { fetchProducts, createProduct, updateProduct, deleteProduct } from '../../redux/slices/productSlice';
-import { AdminLayout } from '../../components/layout';
+import ShopDashboardLayout from '../../components/layout/ShopDashboardLayout';
 import { Modal, Button, InputField, TextareaField, Toggle, EmptyState } from '../../components/ui';
 import { formatCurrency } from '../../utils';
 import type { Product, ProductForm } from '../../types';
@@ -103,7 +103,7 @@ const AdminProductsPage: React.FC = () => {
     .filter((p) => !search || p.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <AdminLayout title="Products">
+    <ShopDashboardLayout title="Products">
       {/* Top bar */}
       <div className="flex flex-wrap gap-3 mb-5">
         <div className="relative flex-1 min-w-48">
@@ -219,7 +219,7 @@ const AdminProductsPage: React.FC = () => {
           </div>
         </div>
       </Modal>
-    </AdminLayout>
+    </ShopDashboardLayout>
   );
 };
 
