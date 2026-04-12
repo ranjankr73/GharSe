@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { fetchShop, updateShop } from '../../redux/slices/shopSlice';
 import ShopDashboardLayout from '../../components/layout/ShopDashboardLayout';
-import { InputField, Button, Toggle } from '../../components/ui';
+import InputField from '../../components/ui/InputField';
+import Button from '../../components/ui/Button';
+import Toggle from '../../components/ui/Toggle';
 import toast from 'react-hot-toast';
 
 const AdminSettingsPage: React.FC = () => {

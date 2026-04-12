@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { fetchProducts, createCategory, deleteCategory } from '../../redux/slices/productSlice';
 import ShopDashboardLayout from '../../components/layout/ShopDashboardLayout';
-import { Modal, Button, InputField, EmptyState } from '../../components/ui';
+import Modal from '../../components/ui/Modal';
+import Button from '../../components/ui/Button';
+import InputField from '../../components/ui/InputField';
+import EmptyState from '../../components/ui/EmptyState';
 import toast from 'react-hot-toast';
 
 const EMOJI_OPTIONS = ['🥦', '🥛', '🍞', '🍿', '☕', '🫙', '🍎', '🥩', '🐟', '🍜', '🧴', '🧹', '💊', '🌿', '🥚'];

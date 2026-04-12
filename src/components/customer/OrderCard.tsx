@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
 import type { Order } from '../../types';
-import { StatusBadge } from '../ui';
+import StatusBadge from '../ui/StatusBadge';
 import { formatCurrency, formatTimeAgo } from '../../utils';
 
 interface OrderCardProps {

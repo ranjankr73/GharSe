@@ -2,108 +2,119 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router";
 import toast from "react-hot-toast";
 import { Eye, EyeOff } from "lucide-react";
-import { InputField, Button } from "../../components/ui";
+
+import InputField from "../ui/InputField";
+import Button from "../ui/Button";
+
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { loginAdmin, clearError } from "../../redux/slices/authSlice";
 
 const LoginForm = () => {
-    const [email, setEmail] = useState("admin@freshbasket.com");
-    const [password, setPassword] = useState("admin123");
-    const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("admin@freshbasket.com");
+  const [password, setPassword] = useState("admin123");
+  const [showPassword, setShowPassword] = useState(false);
 
-    const navigate = useNavigate();
-    const dispatch = useAppDispatch();
-    const { loading, error, isAuthenticated } = useAppSelector((s) => s.auth);
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { loading, error, isAuthenticated } = useAppSelector(
+    (s) => s.auth
+  );
 
-    useEffect(() => {
-        if (isAuthenticated) navigate("/admin/dashboard");
-    }, [isAuthenticated, navigate]);
+  useEffect(() => {
+    if (isAuthenticated) navigate("/admin/dashboard");
+  }, [isAuthenticated, navigate]);
 
-    useEffect(() => {
-        if (error) {
-            toast.error(error);
-            dispatch(clearError());
-        }
-    }, [error, dispatch]);
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearError());
+    }
+  }, [error, dispatch]);
 
-    const handleLogin = async () => {
-        try {
-            await dispatch(loginAdmin({ email, password })).unwrap();
-            toast.success("Welcome back! 👋");
-        } catch {}
-    };
+  const handleLogin = async () => {
+    if (!email || !password) {
+      toast.error("Please fill all fields");
+      return;
+    }
 
-    return (
-        <div className="w-full max-w-sm">
-            
-            {/* Heading */}
-            <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold tracking-tight">
-                    Welcome Back 🍔
-                </h1>
-                <p className="text-sm text-gray-500 mt-1">
-                    Login to manage your shop
-                </p>
-            </div>
+    try {
+      await dispatch(loginAdmin({ email, password })).unwrap();
+      toast.success("Welcome back! 👋");
+    } catch {}
+  };
 
-            {/* Card */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 space-y-5">
-                
-                {/* Inputs */}
-                <div className="space-y-4">
-                    <InputField
-                        label="Email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="admin@freshbasket.com"
-                        className="bg-gray-50 border-gray-200 focus:ring-red-400 focus:border-red-400"
-                    />
+  return (
+    <div className="w-full max-w-sm space-y-6">
+      
+      {/* Heading */}
+      <div className="text-center space-y-1">
+        <h1 className="text-2xl font-semibold tracking-tight text-gray-800">
+          Welcome back 👋
+        </h1>
+        <p className="text-sm text-gray-500">
+          Manage your shop with ease
+        </p>
+      </div>
 
-                    <div className="relative">
-                        <InputField
-                            label="Password"
-                            type={showPassword ? "text" : "password"}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="••••••••"
-                            className="bg-gray-50 border-gray-200 focus:ring-red-400 focus:border-red-400 pr-16"
-                        />
+      {/* Card */}
+      <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-5">
+        
+        {/* Inputs */}
+        <div className="space-y-4">
+          
+          <InputField
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+          />
 
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword(prev => !prev)}
-                            className="absolute right-3 bottom-3.5 text-xs font-medium text-gray-500 hover:text-red-500 transition"
-                        >
-                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                        </button>
-                    </div>
-                </div>
+          {/* Password */}
+          <div className="relative">
+            <InputField
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              className="pr-12"
+            />
 
-                {/* CTA */}
-                <Button
-                    onClick={handleLogin}
-                    variant="primary"
-                    size="lg"
-                    loading={loading}
-                    className="w-full bg-red-500 hover:bg-red-600 text-white rounded-xl shadow-md transition-all duration-300 hover:shadow-lg active:scale-[0.98]"
-                >
-                    Sign In →
-                </Button>
-            </div>
-
-            {/* Footer */}
-            <p className="text-center text-gray-400 text-xs mt-6">
-                Customer view?{" "}
-                <Link
-                    to="/shop/shop-001"
-                    className="text-red-500 font-semibold hover:underline"
-                >
-                    Go to shop →
-                </Link>
-            </p>
+            {/* Toggle */}
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-9 text-gray-400 hover:text-red-500 transition"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
         </div>
-    );
+
+        {/* CTA */}
+        <Button
+          onClick={handleLogin}
+          loading={loading}
+          fullWidth
+          size="lg"
+        >
+          Sign In →
+        </Button>
+      </div>
+
+      {/* Footer */}
+      <p className="text-center text-xs text-gray-400">
+        Customer view?{" "}
+        <Link
+          to="/shop/shop-001"
+          className="text-red-500 font-medium hover:underline"
+        >
+          Go to shop →
+        </Link>
+      </p>
+    </div>
+  );
 };
 
 export default LoginForm;

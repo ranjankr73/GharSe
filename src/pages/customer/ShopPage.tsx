@@ -7,7 +7,7 @@ import { selectCartCount, selectCartTotal } from '../../redux/slices/cartSlice';
 import ProductCard from '../../components/customer/ProductCard';
 import { StickyCartBar } from '../../components/customer/OrderCard';
 import { CustomerNav } from '../../components/layout';
-import { ProductCardSkeleton } from '../../components/ui';
+import ProductCardSkeleton from '../../components/ui/ProductCardSkeleton';
 
 const ShopPage: React.FC = () => {
   const { shopId = 'shop-001' } = useParams();

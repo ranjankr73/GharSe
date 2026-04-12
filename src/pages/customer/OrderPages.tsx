@@ -4,7 +4,8 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { fetchOrder } from '../../redux/slices/orderSlice';
 import { CustomerNav } from '../../components/layout';
 import StepTracker from '../../components/ui/StepTracker';
-import { StatusBadge, Skeleton } from '../../components/ui';
+import Skeleton from '../../components/ui/Skeleton';
+import StatusBadge from '../../components/ui/StatusBadge';
 import { formatCurrency, formatDate } from '../../utils';
 import type { Order } from '../../types';
 
@@ -124,8 +125,8 @@ export const OrderTrackingPage: React.FC = () => {
       <div className="max-w-lg mx-auto px-4 mt-5 space-y-4">
         {loading && !currentOrder ? (
           <div className="space-y-4">
-            <Skeleton className="h-48 w-full" />
-            <Skeleton className="h-32 w-full" />
+            <Skeleton />
+            <Skeleton />
           </div>
         ) : error ? (
           <div className="bg-red-50 rounded-2xl p-6 text-center">

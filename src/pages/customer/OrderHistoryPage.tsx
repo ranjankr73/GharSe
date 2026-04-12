@@ -5,7 +5,8 @@ import { fetchOrders } from '../../redux/slices/orderSlice';
 import { addItem } from '../../redux/slices/cartSlice';
 import { CustomerNav } from '../../components/layout';
 import { OrderCard } from '../../components/customer/OrderCard';
-import { EmptyState, Skeleton } from '../../components/ui';
+import EmptyState from '../../components/ui/EmptyState';
+import Skeleton from '../../components/ui/Skeleton';
 import type { Order } from '../../types';
 import toast from 'react-hot-toast';
 
