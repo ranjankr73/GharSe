@@ -15,7 +15,7 @@ import ShopLoginPage from './pages/admin/ShopLoginPage';
 import ShopDashboard from './pages/admin/ShopDashboardPage';
 import AdminOrdersPage from './pages/admin/ShopOrdersPage';
 import AdminProductsPage from './pages/admin/ShopProductsPage';
-import AdminCategoriesPage from './pages/admin/AdminCategoriesPage';
+import AdminCategoriesPage from './pages/admin/ShopCategoriesPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 import ShopDashboardLayout from './components/layout/ShopDashboardLayout';
 
