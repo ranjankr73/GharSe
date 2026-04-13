@@ -3,12 +3,14 @@ interface TextareaFieldProps
   label: string;
   error?: string;
   hint?: string;
+  required?: boolean;
 }
 
 const TextareaField: React.FC<TextareaFieldProps> = ({
   label,
   error,
   hint,
+  required,
   className = "",
   ...props
 }) => {
@@ -18,6 +20,7 @@ const TextareaField: React.FC<TextareaFieldProps> = ({
       {/* Label */}
       <label className="text-sm font-medium text-gray-700">
         {label}
+        {required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
 
       {/* Textarea */}
