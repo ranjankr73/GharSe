@@ -57,75 +57,59 @@ const ShopPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-gray-50 pb-32 md:pt-14">
             {/* 🔥 HERO */}
-            <div className="bg-linear-to-b from-red-200 via-white to-white">
-                <div className="max-w-3xl mx-auto px-4 pt-10 pb-6">
-                    {shop && (
-                        <>
-                            <div className="flex items-center gap-3">
-                                <img
-                                    src={shop.logo}
-                                    alt={shop.name}
-                                    className="w-12 h-12 rounded-xl border border-gray-200"
-                                />
 
-                                <div>
-                                    <h1 className="text-lg font-semibold text-gray-800">
-                                        {shop.name}
-                                    </h1>
-                                    <p className="text-sm text-gray-500">
-                                        {shop.tagline}
-                                    </p>
-                                </div>
-                            </div>
+            <div className="relative h-52 md:h-64 overflow-hidden">
+                <img
+                    src={shop?.coverImage}
+                    alt={shop?.name}
+                    className="w-full h-full object-cover"
+                />
 
-                            <div className="flex flex-wrap gap-2 mt-4">
-                                {/* Open / Closed */}
-                                <div
-                                    className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${shop.isOpen ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}
-                                >
-                                    <span
-                                        className={`w-1.5 h-1.5  rounded-full ${shop.isOpen ? "bg-green-600" : "bg-red-500"}`}
-                                    />
-                                    {shop.isOpen ? "Open" : "Closed"}
-                                </div>
+                {/* Gradient */}
+                <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
 
-                                {/* Delivery Time */}
-                                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-medium">
-                                    🕐 {shop.deliveryTime}
-                                </div>
+                {/* Content */}
+                <div className="absolute bottom-0 left-0 right-0 px-4 pb-4 max-w-3xl mx-auto text-white">
+                    <h1 className="text-2xl font-semibold">{shop?.name}</h1>
+                    <p className="text-xs text-white/80">{shop?.tagline}</p>
 
-                                {/* Rating */}
-                                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-medium">
-                                    ⭐ {shop.rating}
-                                </div>
-
-                                {/* Delivery Fee */}
-                                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-medium">
-                                    🛵{" "}
-                                    {shop.deliveryFee === 0
-                                        ? "Free"
-                                        : `₹${shop.deliveryFee}`}
-                                </div>
-                            </div>
-                        </>
-                    )}
+                    <div className="flex flex-wrap gap-2 mt-2 text-[11px]">
+                        <span
+                            className={`px-3 py-1 rounded-full font-medium ${
+                                shop?.isOpen
+                                    ? "bg-green-100 text-green-700"
+                                    : "bg-red-100 text-red-600"
+                            }`}
+                        >
+                            {shop?.isOpen ? "Open now" : "Closed"}
+                        </span>
+                        <span className="bg-white/90 text-black px-2 py-0.5 rounded-full font-medium">
+                            ⭐ {shop?.rating}
+                        </span>
+                        <span className="bg-white/90 text-black px-2 py-0.5 rounded-full font-medium">
+                            🕐 {shop?.deliveryTime}
+                        </span>
+                        <span className="bg-white/90 text-black px-2 py-0.5 rounded-full font-medium">
+                            🛵{" "}
+                            {shop?.deliveryFee === 0
+                                ? "Free"
+                                : `₹${shop?.deliveryFee}`}
+                        </span>
+                    </div>
                 </div>
             </div>
 
-            {/* 🔍 SEARCH */}
-            <div className="max-w-3xl mx-auto px-4 -mt-4">
-                <InputField
-                    label=""
-                    placeholder="Search food..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-            </div>
+            <div className="sticky top-14 z-30">
+                <div className="max-w-3xl mx-auto px-4 py-3 space-y-3">
+                    <InputField
+                        label=""
+                        placeholder="Search for dishes..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
 
-            {/* 🍱 CATEGORIES */}
-            <div className="sticky top-1 lg:top-14 z-30 mt-3">
-                <div className="max-w-3xl mx-auto overflow-x-auto scrollbar-hide">
-                    <div className="flex flex-nowrap gap-2 px-4 py-3">
+                    {/* Categories */}
+                    <div className="flex gap-2 overflow-x-auto">
                         {["all", ...categories.map((c) => c.id)].map((id) => {
                             const cat = categories.find((c) => c.id === id);
 
@@ -139,7 +123,7 @@ const ShopPage: React.FC = () => {
                                             : "outline"
                                     }
                                     onClick={() => setActiveCategory(id)}
-                                    className="shrink-0 whitespace-nowrap bg-gray-50"
+                                    className="rounded-full whitespace-nowrap bg-gray-50"
                                 >
                                     {id === "all"
                                         ? "All"
@@ -196,9 +180,9 @@ const ShopPage: React.FC = () => {
 
             {/* 🛒 CART */}
             <StickyCartBar
-              itemCount={cartCount}
-              total={cartTotal}
-              shopId={shopId}
+                itemCount={cartCount}
+                total={cartTotal}
+                shopId={shopId}
             />
 
             {/* 📱 NAV */}

@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation, useNavigate } from "react-router";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { logout } from "../../redux/slices/authSlice";
 import Logo from "../ui/Logo";
+import Button from "../ui/Button";
 
 const ADMIN_NAV = [
   { to: "/admin/dashboard", icon: "📊", label: "Dashboard" },
@@ -58,10 +59,9 @@ const ShopDashboardLayout: React.FC<Props> = ({ children, title }) => {
             <Logo size="sm" />
           </Link>
 
-          <h2 className="text-lg font-bold tracking-tight m-auto">
-            <span className="text-gray-500">Shop</span>{" "}
-            <span className="text-red-400">Panel</span>
-          </h2>
+          <h2 className="text-lg font-bold tracking-tight mt-5">
+              Shop Dashboard
+          </h2> 
         </div>
 
         {/* NAV */}
@@ -113,17 +113,17 @@ const ShopDashboardLayout: React.FC<Props> = ({ children, title }) => {
             </div>
           </div>
 
-          <button
+          <Button
             onClick={handleLogout}
+            size="md"
+            variant="danger"
             className="
-              w-full flex items-center gap-2 px-3 py-2 rounded-xl
-              text-sm font-medium
-              text-gray-500 hover:text-red-500 hover:bg-red-50
-              transition
+              text-gray-500 hover:text-white-500 hover:bg-red-50
+              transition w-full
             "
           >
             🚪 Logout
-          </button>
+          </Button>
         </div>
       </aside>
 
