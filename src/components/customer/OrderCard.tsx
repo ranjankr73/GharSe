@@ -1,8 +1,11 @@
-import React from 'react';
-import { useNavigate } from 'react-router';
-import type { Order } from '../../types';
-import StatusBadge from '../ui/StatusBadge';
-import { formatCurrency, formatTimeAgo } from '../../utils';
+import React from "react";
+import { useNavigate } from "react-router";
+import type { Order } from "../../types";
+
+import StatusBadge from "../ui/StatusBadge";
+import Button from "../ui/Button";
+
+import { formatCurrency, formatTimeAgo } from "../../utils";
 
 interface OrderCardProps {
   order: Order;
@@ -10,60 +13,98 @@ interface OrderCardProps {
   onReorder?: (order: Order) => void;
 }
 
-export const OrderCard: React.FC<OrderCardProps> = ({ order, showActions = true, onReorder }) => {
+const OrderCard: React.FC<OrderCardProps> = ({
+  order,
+  showActions = true,
+  onReorder,
+}) => {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-white rounded-2xl shadow-card overflow-hidden animate-fade-up">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-100">
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      
+      {/* 🔥 HEADER */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+        
         <div>
-          <span className="font-mono text-xs font-medium text-slate-500">#{order.id}</span>
-          <p className="text-xs text-slate-400 mt-0.5">{formatTimeAgo(order.createdAt)}</p>
+          <p className="text-xs text-gray-400 font-mono">
+            #{order.id}
+          </p>
+          <p className="text-xs text-gray-400 mt-0.5">
+            {formatTimeAgo(order.createdAt)}
+          </p>
         </div>
+
         <StatusBadge status={order.status} />
       </div>
 
-      {/* Items */}
-      <div className="px-4 py-3">
-        <p className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Items</p>
-        <div className="space-y-1">
-          {order.items.map((item, i) => (
-            <div key={i} className="flex justify-between items-center">
-              <span className="text-sm text-slate-700">{item.productName} <span className="text-slate-400">×{item.quantity}</span></span>
-              <span className="text-sm font-semibold text-slate-800">{formatCurrency(item.price * item.quantity)}</span>
-            </div>
-          ))}
-        </div>
-        <div className="mt-3 pt-3 border-t border-slate-100 flex justify-between items-center">
-          <span className="text-xs text-slate-500">Delivery fee</span>
-          <span className="text-xs text-slate-500">{formatCurrency(order.deliveryFee)}</span>
-        </div>
-        <div className="flex justify-between items-center mt-1">
-          <span className="font-semibold text-slate-800 text-sm">Total</span>
-          <span className="font-display font-bold text-slate-900">{formatCurrency(order.totalAmount + order.deliveryFee)}</span>
+      {/* 📦 ITEMS */}
+      <div className="px-4 py-3 space-y-2">
+        
+        {order.items.slice(0, 2).map((item, i) => (
+          <div
+            key={i}
+            className="flex justify-between items-center text-sm"
+          >
+            <span className="text-gray-700 truncate">
+              {item.productName}{" "}
+              <span className="text-gray-400">
+                ×{item.quantity}
+              </span>
+            </span>
+
+            <span className="font-medium text-gray-900">
+              {formatCurrency(item.price * item.quantity)}
+            </span>
+          </div>
+        ))}
+
+        {/* Show more indicator */}
+        {order.items.length > 2 && (
+          <p className="text-xs text-gray-400">
+            +{order.items.length - 2} more items
+          </p>
+        )}
+
+        {/* Total */}
+        <div className="border-t border-gray-100 pt-2 mt-2 flex justify-between items-center">
+          <span className="text-sm font-medium text-gray-600">
+            Total
+          </span>
+          <span className="text-base font-semibold text-gray-900">
+            {formatCurrency(
+              order.totalAmount + order.deliveryFee
+            )}
+          </span>
         </div>
       </div>
 
-      {/* Actions */}
+      {/* 🚀 ACTIONS */}
       {showActions && (
         <div className="px-4 pb-4 flex gap-2">
-          <button
+          
+          <Button
             onClick={() => navigate(`/track/${order.id}`)}
-            className="flex-1 py-2 rounded-xl bg-brand-50 text-brand-700 text-sm font-semibold hover:bg-brand-100 transition-colors"
+            variant="outline"
+            size="md"
+            fullWidth
           >
-            Track Order
-          </button>
+            Track
+          </Button>
+
           {onReorder && (
-            <button
+            <Button
               onClick={() => onReorder(order)}
-              className="flex-1 py-2 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition-colors"
+              size="md"
+              fullWidth
             >
               Reorder
-            </button>
+            </Button>
           )}
         </div>
       )}
     </div>
   );
 };
+
+export default OrderCard;

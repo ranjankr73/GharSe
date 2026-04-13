@@ -93,7 +93,7 @@ const CartPage: React.FC = () => {
 
                 <button
                     onClick={handleClear}
-                    className="text-xs lg:text-base font-medium text-red-500 hover:text-red-600"
+                    className="text-xs lg:text-base font-medium text-red-500 hover:text-red-600 cursor-pointer"
                 >
                     Clear
                 </button>
