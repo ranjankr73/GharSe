@@ -20,6 +20,7 @@ import AdminCategoriesPage from './pages/shop/ShopCategoriesPage';
 import AdminSettingsPage from './pages/shop/ShopSettingsPage';
 import ShopDashboardLayout from './components/layout/ShopDashboardLayout';
 import LandingPage from './pages/LandingPage';
+import ShopBrowsePage from './pages/customer/ShopBrowsePage';
 
 // ─── Protected Route ──────────────────────────────────────────────────────────
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -55,6 +56,7 @@ const App: React.FC = () => {
       <Routes>
         {/* ─── Customer Routes ─────────────────────────── */}
         <Route path="/" element={<LandingPage/>} />
+        <Route path='/shop' element={<ShopBrowsePage/>} />
         <Route path="/shop/:shopId" element={<ShopPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />

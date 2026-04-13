@@ -9,7 +9,7 @@ const CustomerNavbar: React.FC = () => {
   const location = useLocation();
 
   const navItems = [
-    { to: "/shop/shop-001", icon: "🏪", label: "Shop" },
+    { to: "/shop", icon: "🏪", label: "Shops" },
     { to: "/cart", icon: "🛒", label: "Cart", badge: cartCount },
     { to: "/orders", icon: "📦", label: "Orders" },
   ];

@@ -18,7 +18,7 @@ const Logo = ({ symbol = true, name = true, size = "md" }: Props) => {
       
       {symbol && (
         <div className={`${sizeMap[size]} flex items-center justify-center`}>
-          <MdOutlineFoodBank className="text-[#ff3131] size-32" />
+          <MdOutlineFoodBank className="text-[#ff3131] h-10 w-10" />
         </div>
       )}
 
