@@ -7,7 +7,7 @@ const ShopCard = ({ shop }: any) => {
 
   return (
     <div
-      onClick={() => navigate(`/shop/${shop.id}`)}
+      onClick={() => navigate(`/shops/${shop.id}`)}
       className="group cursor-pointer shadow-sm rounded-2xl overflow-hidden bg-white border border-gray-200 transition hover:shadow-md p-2"
     >
       {/* 🔥 IMAGE */}

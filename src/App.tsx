@@ -11,7 +11,7 @@ import OrderTrackingPage from './pages/customer/OrderTrackingPage';
 import OrderSuccessPage from './pages/customer/OrderSuccessPage';
 import OrderHistoryPage from './pages/customer/OrderHistoryPage';
 
-// Admin Pages
+// Shops Pages
 import ShopLoginPage from './pages/shop/ShopLoginPage';
 import ShopDashboard from './pages/shop/ShopDashboardPage';
 import AdminOrdersPage from './pages/shop/ShopOrdersPage';
@@ -25,7 +25,7 @@ import ShopBrowsePage from './pages/customer/ShopBrowsePage';
 // ─── Protected Route ──────────────────────────────────────────────────────────
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated);
-  return isAuthenticated ? <>{children}</> : <Navigate to="/admin/login" replace />;
+  return isAuthenticated ? <>{children}</> : <Navigate to="/shops/login" replace />;
 };
 
 // ─── App ──────────────────────────────────────────────────────────────────────
@@ -54,23 +54,24 @@ const App: React.FC = () => {
         }}
       />
       <Routes>
+        <Route path="/" element={<LandingPage/>} index/>
+
         {/* ─── Customer Routes ─────────────────────────── */}
-        <Route path="/" element={<LandingPage/>} />
-        <Route path='/shop' element={<ShopBrowsePage/>} />
-        <Route path="/shop/:shopId" element={<ShopPage />} />
+        <Route path='/browse-shops' element={<ShopBrowsePage/>} />
+        <Route path="/shops/:shopId" element={<ShopPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/success" element={<OrderSuccessPage />} />
         <Route path="/track/:orderId" element={<OrderTrackingPage />} />
         <Route path="/orders" element={<OrderHistoryPage />} />
 
-        {/* ─── Admin Routes ────────────────────────────── */}
-        <Route path="/admin/login" element={<ShopLoginPage />} />
-        <Route path="/admin/dashboard" element={<ProtectedRoute><ShopDashboardLayout title='Dashboard'><ShopDashboard /></ShopDashboardLayout></ProtectedRoute>} />
-        <Route path="/admin/orders" element=  {<ProtectedRoute><ShopDashboardLayout title='Orders'><AdminOrdersPage /></ShopDashboardLayout></ProtectedRoute>} />
-        <Route path="/admin/products" element={<ProtectedRoute><ShopDashboardLayout title='Products'><AdminProductsPage /></ShopDashboardLayout></ProtectedRoute>} />
-        <Route path="/admin/categories" element={<ProtectedRoute><ShopDashboardLayout title='Categories'><AdminCategoriesPage /></ShopDashboardLayout></ProtectedRoute>} />
-        <Route path="/admin/settings" element={<ProtectedRoute><ShopDashboardLayout title='Settings'><AdminSettingsPage /></ShopDashboardLayout></ProtectedRoute>} />
+        {/* ─── Shop Routes ────────────────────────────── */}
+        <Route path="/shops/login" element={<ShopLoginPage />} />
+        <Route path="/shops/dashboard" element={<ProtectedRoute><ShopDashboardLayout title='Dashboard'><ShopDashboard /></ShopDashboardLayout></ProtectedRoute>} />
+        <Route path="/shops/orders" element=  {<ProtectedRoute><ShopDashboardLayout title='Orders'><AdminOrdersPage /></ShopDashboardLayout></ProtectedRoute>} />
+        <Route path="/shops/products" element={<ProtectedRoute><ShopDashboardLayout title='Products'><AdminProductsPage /></ShopDashboardLayout></ProtectedRoute>} />
+        <Route path="/shops/categories" element={<ProtectedRoute><ShopDashboardLayout title='Categories'><AdminCategoriesPage /></ShopDashboardLayout></ProtectedRoute>} />
+        <Route path="/shops/settings" element={<ProtectedRoute><ShopDashboardLayout title='Settings'><AdminSettingsPage /></ShopDashboardLayout></ProtectedRoute>} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

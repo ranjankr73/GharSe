@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import LoginForm from "../../components/admin/LoginForm";
 import Logo from "../../components/ui/Logo";
 
@@ -14,7 +15,9 @@ const ShopLoginPage: React.FC = () => {
 
                 {/* Gradient Overlay (better than black) */}
                 <div className="absolute inset-0 bg-linear-to-b  flex flex-col justify-between p-8 text-white">
-                    <Logo />
+                    <Link to="/">
+                        <Logo />
+                    </Link>
 
                     <p className="text-xs text-gray-300">
                         © {new Date().getFullYear()} GharSe
@@ -28,7 +31,9 @@ const ShopLoginPage: React.FC = () => {
                 <div className="w-full max-w-md flex flex-col items-center justify-center flex-1">
                     {/* Logo (mobile only) */}
                     <div className="lg:hidden mb-6">
-                        <Logo size="md" />
+                        <Link to="/">
+                            <Logo size="md" />
+                        </Link>
                     </div>
 
                     <LoginForm />

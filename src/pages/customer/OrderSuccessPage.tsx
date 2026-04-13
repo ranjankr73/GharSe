@@ -12,7 +12,7 @@ const OrderSuccessPage: React.FC = () => {
   const order = location.state?.order as Order | undefined;
 
   useEffect(() => {
-    if (!order) navigate("/shop/shop-001");
+    if (!order) navigate("/browse-shops");
   }, [order, navigate]);
 
   if (!order) return null;
@@ -111,7 +111,7 @@ const OrderSuccessPage: React.FC = () => {
         </Button>
 
         <Button
-          onClick={() => navigate("/shop/shop-001")}
+          onClick={() => navigate("/browse-shops")}
           variant="outline"
           size="lg"
           fullWidth

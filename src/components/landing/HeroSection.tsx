@@ -40,13 +40,13 @@ const HeroSection = () => {
                         className="flex gap-3 text-center justify-center lg:justify-start"
                     >
                         <Button
-                            onClick={() => navigate("/shop/shop-001")}
+                            onClick={() => navigate("/browse-shops")}
                             size="lg"
                         >
                             Browse Shops
                         </Button>
 
-                        <Button variant="outline" size="lg">
+                        <Button onClick={() => navigate("/shops/login")} variant="outline" size="lg">
                             Open Your Shop
                         </Button>
                     </motion.div>

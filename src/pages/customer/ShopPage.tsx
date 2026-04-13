@@ -109,7 +109,7 @@ const ShopPage: React.FC = () => {
                     />
 
                     {/* Categories */}
-                    <div className="flex gap-2 overflow-x-auto">
+                    <div className="flex gap-2 overflow-x-auto p-2">
                         {["all", ...categories.map((c) => c.id)].map((id) => {
                             const cat = categories.find((c) => c.id === id);
 

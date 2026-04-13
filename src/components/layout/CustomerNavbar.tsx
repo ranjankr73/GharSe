@@ -9,7 +9,7 @@ const CustomerNavbar: React.FC = () => {
   const location = useLocation();
 
   const navItems = [
-    { to: "/shop", icon: "🏪", label: "Shops" },
+    { to: "/browse-shops", icon: "🏪", label: "Shops" },
     { to: "/cart", icon: "🛒", label: "Cart", badge: cartCount },
     { to: "/orders", icon: "📦", label: "Orders" },
   ];
@@ -24,7 +24,7 @@ const CustomerNavbar: React.FC = () => {
         <div className="max-w-5xl mx-auto w-full flex items-center justify-between px-6 py-3">
           
           {/* Logo */}
-          <Link to="/shop/shop-001">
+          <Link to="/">
             <Logo />
           </Link>
 

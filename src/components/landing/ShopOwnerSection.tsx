@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import Button from "../ui/Button";
+import { useNavigate } from "react-router";
 
 const features = [
     "Accept & manage orders easily",
@@ -8,6 +9,8 @@ const features = [
 ];
 
 const ShopOwnerSection = () => {
+    const navigate = useNavigate();
+    
     return (
         <section id="shops" className="py-20 bg-white overflow-hidden px-10">
             <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
@@ -73,7 +76,7 @@ const ShopOwnerSection = () => {
                         transition={{ delay: 0.6, duration: 0.5 }}
                         viewport={{ once: true }}
                     >
-                        <Button size="lg" className="mt-6">
+                        <Button onClick={() => navigate("/shops/login")} size="lg" className="mt-6">
                             Start Selling
                         </Button>
                     </motion.div>

@@ -76,7 +76,7 @@ const OrderHistoryPage: React.FC = () => {
                         title="No orders yet"
                         description="Once you place your first order, it will appear here."
                         action={
-                            <Button onClick={() => navigate("/shop/shop-001")}>
+                            <Button onClick={() => navigate("/browse-shops")}>
                                 Browse Food 🍔
                             </Button>
                         }

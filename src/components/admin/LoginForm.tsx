@@ -21,7 +21,7 @@ const LoginForm = () => {
   );
 
   useEffect(() => {
-    if (isAuthenticated) navigate("/admin/dashboard");
+    if (isAuthenticated) navigate("/shops/dashboard");
   }, [isAuthenticated, navigate]);
 
   useEffect(() => {
@@ -107,7 +107,7 @@ const LoginForm = () => {
       <p className="text-center text-xs text-gray-400">
         Customer view?{" "}
         <Link
-          to="/shop/shop-001"
+          to="/browse-shops"
           className="text-red-500 font-medium hover:underline"
         >
           Go to shop →

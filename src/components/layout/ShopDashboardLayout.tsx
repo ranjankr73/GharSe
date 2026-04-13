@@ -6,11 +6,11 @@ import Logo from "../ui/Logo";
 import Button from "../ui/Button";
 
 const ADMIN_NAV = [
-  { to: "/admin/dashboard", icon: "📊", label: "Dashboard" },
-  { to: "/admin/orders", icon: "📦", label: "Orders" },
-  { to: "/admin/products", icon: "🛍️", label: "Products" },
-  { to: "/admin/categories", icon: "📂", label: "Categories" },
-  { to: "/admin/settings", icon: "⚙️", label: "Settings" },
+  { to: "/shops/dashboard", icon: "📊", label: "Dashboard" },
+  { to: "/shops/orders", icon: "📦", label: "Orders" },
+  { to: "/shops/products", icon: "🛍️", label: "Products" },
+  { to: "/shops/categories", icon: "📂", label: "Categories" },
+  { to: "/shops/settings", icon: "⚙️", label: "Settings" },
 ];
 
 interface Props {
@@ -28,7 +28,7 @@ const ShopDashboardLayout: React.FC<Props> = ({ children, title }) => {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate("/admin/login");
+    navigate("/shops/login");
   };
 
   return (
@@ -55,7 +55,7 @@ const ShopDashboardLayout: React.FC<Props> = ({ children, title }) => {
       >
         {/* HEADER */}
         <div className="p-6 border-b border-gray-100 flex flex-col items-start gap-5">
-          <Link to="/shop/shop-001">
+          <Link to="/">
             <Logo size="sm" />
           </Link>
 

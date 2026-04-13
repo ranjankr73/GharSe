@@ -72,7 +72,7 @@ const CheckoutPage: React.FC = () => {
     if (!validate()) return;
 
     if (cartItems.length === 0) {
-      navigate("/shop/shop-001");
+      navigate("/browse-shops");
       return;
     }
 
@@ -104,8 +104,7 @@ const CheckoutPage: React.FC = () => {
 
   useEffect(() => {
     if (cartItems.length === 0) {
-      navigate("/shop/shop-001");
-      // return null;
+      navigate("/browse-shops");
     }
   }, []);
   

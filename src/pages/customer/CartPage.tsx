@@ -63,7 +63,7 @@ const CartPage: React.FC = () => {
                     title="Your cart is empty"
                     description="Add items from the shop to get started."
                     action={
-                        <Button onClick={() => navigate("/shop/shop-001")}>
+                        <Button onClick={() => navigate("/browse-shops")}>
                             Browse Shop
                         </Button>
                     }

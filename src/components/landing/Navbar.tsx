@@ -47,7 +47,7 @@ const Navbar = () => {
     <header
       className={`
         sticky top-0 z-50 transition-all duration-300
-        ${scrolled ? "bg-white shadow-sm border-b border-gray-100" : "bg-white/70 backdrop-blur"}
+        ${scrolled ? "bg-white shadow-sm" : "bg-white/70 backdrop-blur"}
       `}
     >
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -62,7 +62,7 @@ const Navbar = () => {
               key={item.id}
               onClick={() => scrollToSection(item.id)}
               className={`
-                relative transition-colors duration-200
+                relative transition-colors duration-200 cursor-pointer
                 ${
                   active === item.id
                     ? "text-red-500"
@@ -90,14 +90,14 @@ const Navbar = () => {
 
         {/* CTA + Mobile Menu */}
         <div className="flex items-center gap-2">
-          <Link to="/shop/shop-001">
+          <Link to="/browse-shops">
             <Button size="md">Browse Shops</Button>
           </Link>
 
           {/* Mobile toggle */}
           <button
             onClick={() => setOpen(!open)}
-            className="md:hidden w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100"
+            className="md:hidden w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 cursor-pointer"
           >
             {open ? <X size={18} /> : <Menu size={18} />}
           </button>
@@ -112,7 +112,7 @@ const Navbar = () => {
               key={item.id}
               onClick={() => scrollToSection(item.id)}
               className={`
-                block w-full text-left text-sm font-medium py-2
+                block w-full text-left text-sm font-medium py-2 cursor-pointer
                 ${
                   active === item.id
                     ? "text-red-500"
