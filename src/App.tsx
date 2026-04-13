@@ -7,7 +7,8 @@ import { useAppSelector } from './hooks';
 import ShopPage from './pages/customer/ShopPage';
 import CartPage from './pages/customer/CartPage';
 import CheckoutPage from './pages/customer/CheckoutPage';
-import { OrderSuccessPage, OrderTrackingPage } from './pages/customer/OrderPages';
+import OrderTrackingPage from './pages/customer/OrderTrackingPage';
+import OrderSuccessPage from './pages/customer/OrderSuccessPage';
 import OrderHistoryPage from './pages/customer/OrderHistoryPage';
 
 // Admin Pages

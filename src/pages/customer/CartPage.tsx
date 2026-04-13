@@ -48,7 +48,7 @@ const CartPage: React.FC = () => {
                 >
                     <button
                         onClick={() => navigate(-1)}
-                        className="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center"
+                        className="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center cursor-pointer"
                     >
                         ←
                     </button>
@@ -81,7 +81,7 @@ const CartPage: React.FC = () => {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => navigate(-1)}
-                        className="w-9 h-9 rounded-xl bg-gray-100 text-center py-auto"
+                        className="w-9 h-9 rounded-xl bg-gray-100 text-center py-auto cursor-pointer"
                     >
                         ←
                     </button>
