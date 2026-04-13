@@ -7,7 +7,7 @@ const HeroSection = () => {
 
     return (
         <section className="min-h-screen flex items-start md:items-center pt-2 md:pt-0 bg-linear-to-b from-red-50 via-white to-white">
-            <div className="max-w-6xl mx-auto px-4 py-10 grid md:grid-cols-2 gap-10 items-center w-full">
+            <div className="max-w-6xl mx-auto px-4 py-10 md:py-14 lg:py-20 grid lg:grid-cols-2 gap-10 md:gap-14 lg:gap-10 items-center w-full text-center lg:text-left">
                 {/* 🔥 LEFT */}
                 <div className="space-y-6">
                     {/* Heading */}
@@ -26,7 +26,7 @@ const HeroSection = () => {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1, duration: 0.6 }}
-                        className="text-gray-600 text-base md:text-lg max-w-md"
+                        className="text-gray-600 text-base md:text-lg max-w-md text-center lg:text-left mx-auto lg:mx-0"
                     >
                         Browse items, add to cart, and place orders instantly.
                         Simple, fast, and made for your neighborhood.
@@ -37,7 +37,7 @@ const HeroSection = () => {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2, duration: 0.6 }}
-                        className="flex gap-3"
+                        className="flex gap-3 text-center justify-center lg:justify-start"
                     >
                         <Button
                             onClick={() => navigate("/shop/shop-001")}
@@ -56,7 +56,7 @@ const HeroSection = () => {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3, duration: 0.6 }}
-                        className="flex flex-wrap gap-2 pt-2"
+                        className="flex flex-wrap gap-2 pt-2 text-center justify-center lg:justify-start"
                     >
                         <span className="px-3 py-1.5 text-xs font-medium bg-red-50 text-red-600 rounded-full">
                             ⚡ Fast ordering
