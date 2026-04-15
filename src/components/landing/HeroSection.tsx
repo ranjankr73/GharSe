@@ -46,7 +46,7 @@ const HeroSection = () => {
                             Browse Shops
                         </Button>
 
-                        <Button onClick={() => navigate("/shops/login")} variant="outline" size="lg">
+                        <Button onClick={() => navigate("/shops/register")} variant="outline" size="lg">
                             Open Your Shop
                         </Button>
                     </motion.div>

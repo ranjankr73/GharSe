@@ -12,7 +12,6 @@ import OrderSuccessPage from './pages/customer/OrderSuccessPage';
 import OrderHistoryPage from './pages/customer/OrderHistoryPage';
 
 // Shops Pages
-import ShopLoginPage from './pages/shop/ShopLoginPage';
 import ShopDashboard from './pages/shop/ShopDashboardPage';
 import AdminOrdersPage from './pages/shop/ShopOrdersPage';
 import AdminProductsPage from './pages/shop/ShopProductsPage';
@@ -21,6 +20,8 @@ import AdminSettingsPage from './pages/shop/ShopSettingsPage';
 import ShopDashboardLayout from './components/layout/ShopDashboardLayout';
 import LandingPage from './pages/LandingPage';
 import ShopBrowsePage from './pages/customer/ShopBrowsePage';
+import SignupPage from './pages/auth/SignupPage';
+import LoginPage from './pages/auth/LoginPage';
 
 // ─── Protected Route ──────────────────────────────────────────────────────────
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -55,6 +56,10 @@ const App: React.FC = () => {
       />
       <Routes>
         <Route path="/" element={<LandingPage/>} index/>
+        <Route path="/shops/register" element={<SignupPage/>} />
+        <Route path="/customers/register" element={<SignupPage/>} />
+        <Route path="/shops/login" element={<LoginPage/>} />
+        <Route path="/customers/login" element={<LoginPage/>} />
 
         {/* ─── Customer Routes ─────────────────────────── */}
         <Route path='/browse-shops' element={<ShopBrowsePage/>} />
@@ -66,7 +71,6 @@ const App: React.FC = () => {
         <Route path="/orders" element={<OrderHistoryPage />} />
 
         {/* ─── Shop Routes ────────────────────────────── */}
-        <Route path="/shops/login" element={<ShopLoginPage />} />
         <Route path="/shops/dashboard" element={<ProtectedRoute><ShopDashboardLayout title='Dashboard'><ShopDashboard /></ShopDashboardLayout></ProtectedRoute>} />
         <Route path="/shops/orders" element=  {<ProtectedRoute><ShopDashboardLayout title='Orders'><AdminOrdersPage /></ShopDashboardLayout></ProtectedRoute>} />
         <Route path="/shops/products" element={<ProtectedRoute><ShopDashboardLayout title='Products'><AdminProductsPage /></ShopDashboardLayout></ProtectedRoute>} />
@@ -74,7 +78,7 @@ const App: React.FC = () => {
         <Route path="/shops/settings" element={<ProtectedRoute><ShopDashboardLayout title='Settings'><AdminSettingsPage /></ShopDashboardLayout></ProtectedRoute>} />
 
         {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
       </Routes>
     </BrowserRouter>
   );
