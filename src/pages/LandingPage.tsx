@@ -7,8 +7,9 @@ import CTASection from "../components/landing/CTASection";
 import Footer from "../components/landing/Footer";
 
 const LandingPage = () => {
+  
   return (
-        <div className="bg-white text-gray-900 scroll-smooth">
+      <div className="bg-white text-gray-900 scroll-smooth">
       
       {/* 🔥 NAVBAR */}
       <Navbar />

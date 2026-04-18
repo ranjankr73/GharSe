@@ -34,17 +34,17 @@ const Footer = () => {
             </h3>
             <ul className="space-y-2 text-sm text-gray-500">
               <li>
-                <Link to="/browse-shops" className="hover:text-red-500 transition">
+                <Link to="/customers/browse-shops" className="hover:text-red-500 transition">
                   Browse Shops
                 </Link>
               </li>
               <li>
-                <Link to="/cart" className="hover:text-red-500 transition">
+                <Link to="/customers/cart" className="hover:text-red-500 transition">
                   Cart
                 </Link>
               </li>
               <li>
-                <Link to="/orders" className="hover:text-red-500 transition">
+                <Link to="/customers/orders" className="hover:text-red-500 transition">
                   Orders
                 </Link>
               </li>
@@ -68,8 +68,8 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/shops/login" className="hover:text-red-500 transition">
-                Start Selling
+                <Link to="/shops/register" className="hover:text-red-500 transition">
+                Open Your Shop
                 </Link>
               </li>
             </ul>

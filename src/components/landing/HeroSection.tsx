@@ -40,7 +40,7 @@ const HeroSection = () => {
                         className="flex gap-3 text-center justify-center lg:justify-start"
                     >
                         <Button
-                            onClick={() => navigate("/browse-shops")}
+                            onClick={() => navigate("/customers/browse-shops")}
                             size="lg"
                         >
                             Browse Shops

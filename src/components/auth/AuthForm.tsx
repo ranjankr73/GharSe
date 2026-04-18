@@ -1,56 +1,59 @@
-import { useState, useEffect } from "react";
-import { useLocation, Link } from "react-router";
+import { useState } from "react";
+import { useLocation, Link, useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import { Eye, EyeOff } from "lucide-react";
 
 import InputField from "../ui/InputField";
 import Button from "../ui/Button";
 
-import { useAppDispatch, useAppSelector } from "../../hooks";
-import {
-  loginUser,
-  registerUser,
-  clearError,
-} from "../../redux/slices/authSlice";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { registerUser, loginUser } from "../../features/auth/authThunks";
+import { type UserRole } from "../../features/auth/authTypes";
 
 const AuthForm = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("admin@freshbasket.com");
-  const [password, setPassword] = useState("admin123");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const location = useLocation();
-
+  const { status } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
-  const { loading, error, isAuthenticated } = useAppSelector(
-    (s) => s.auth
-  );
 
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
-      dispatch(clearError());
-    }
-  }, [error, dispatch]);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const role = location.pathname.split("/")[1];
   const mode = location.pathname.split("/")[2];
 
   const handleSubmit = async () => {
-    if (!email || !password || (mode === "register" && !name)) {
+    if (!email || !password || (mode === "register" && !fullName)) {
       toast.error("Please fill all fields");
       return;
     }
 
     try {
       if (mode === "login") {
-        await dispatch(loginUser({ email, password, role })).unwrap();
+        await dispatch(loginUser({ email, password })).unwrap();
         toast.success("Welcome back 👋");
       } else {
-        await dispatch(registerUser({ name, email, password, role })).unwrap();
+        const userRole: UserRole = role === "customers" ? "customer" : "shop";
+        await dispatch(registerUser({ fullName, email, password, role: userRole })).unwrap();
         toast.success("Account created 🎉");
       }
-    } catch {}
+
+      if(role === "customers"){
+        navigate("/customers/browse-shops");
+      }else{
+        navigate("/shops/dashboard");
+      }
+    } catch(error: any) {
+      toast.error(error?.message);
+    } finally {
+      setFullName("");
+      setEmail("");
+      setPassword("");
+    }
   };
 
   return (
@@ -74,8 +77,8 @@ const AuthForm = () => {
         {mode === "register" && (
           <InputField
             label="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
           />
         )}
 
@@ -103,7 +106,7 @@ const AuthForm = () => {
           </button>
         </div>
 
-        <Button onClick={handleSubmit} loading={loading} fullWidth>
+        <Button onClick={handleSubmit} loading={status === "loading"} fullWidth>
           {mode === "login" ? "Sign In →" : "Sign Up →"}
         </Button>
 

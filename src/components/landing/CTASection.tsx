@@ -34,7 +34,7 @@ const CTASection = () => {
           <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6">
             
             <Button
-              onClick={() => navigate("/browse-shops")}
+              onClick={() => navigate("/customers/browse-shops")}
               size="lg"
               fullWidth
             >
@@ -42,7 +42,7 @@ const CTASection = () => {
             </Button>
 
             <Button
-              onClick={() => navigate("/shops/login")}  
+              onClick={() => navigate("/shops/register")}  
               variant="outline"
               size="lg"
               fullWidth

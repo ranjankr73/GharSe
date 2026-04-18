@@ -1,36 +1,50 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router';
 import { Toaster } from 'react-hot-toast';
-import { useAppSelector } from './hooks';
 
-// Customer Pages
-import ShopPage from './pages/customer/ShopPage';
-import CartPage from './pages/customer/CartPage';
-import CheckoutPage from './pages/customer/CheckoutPage';
-import OrderTrackingPage from './pages/customer/OrderTrackingPage';
-import OrderSuccessPage from './pages/customer/OrderSuccessPage';
-import OrderHistoryPage from './pages/customer/OrderHistoryPage';
+import { useAppDispatch } from './hooks/useAppDispatch';
+import { getCurrentUser } from './features/auth/authThunks';
+import { setToken } from './features/auth/authSlice';
+import { getToken } from './utils/tokenManager';
 
-// Shops Pages
-import ShopDashboard from './pages/shop/ShopDashboardPage';
-import AdminOrdersPage from './pages/shop/ShopOrdersPage';
-import AdminProductsPage from './pages/shop/ShopProductsPage';
-import AdminCategoriesPage from './pages/shop/ShopCategoriesPage';
-import AdminSettingsPage from './pages/shop/ShopSettingsPage';
-import ShopDashboardLayout from './components/layout/ShopDashboardLayout';
+// Public Pages
 import LandingPage from './pages/LandingPage';
 import ShopBrowsePage from './pages/customer/ShopBrowsePage';
 import SignupPage from './pages/auth/SignupPage';
 import LoginPage from './pages/auth/LoginPage';
 
-// ─── Protected Route ──────────────────────────────────────────────────────────
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated);
-  return isAuthenticated ? <>{children}</> : <Navigate to="/shops/login" replace />;
-};
+// Protected Route
+import ProtectedRoute from './components/layout/ProtectedRoute';
 
-// ─── App ──────────────────────────────────────────────────────────────────────
+// Customer Pages
+// import ShopPage from './pages/customer/ShopPage';
+// import CartPage from './pages/customer/CartPage';
+// import CheckoutPage from './pages/customer/CheckoutPage';
+// import OrderTrackingPage from './pages/customer/OrderTrackingPage';
+// import OrderSuccessPage from './pages/customer/OrderSuccessPage';
+// import OrderHistoryPage from './pages/customer/OrderHistoryPage';
+
+
+// Shops Pages
+import ShopDashboardLayout from './components/layout/ShopDashboardLayout';
+// import ShopDashboard from './pages/shop/ShopDashboardPage';
+// import AdminOrdersPage from './pages/shop/ShopOrdersPage';
+// import AdminProductsPage from './pages/shop/ShopProductsPage';
+// import AdminCategoriesPage from './pages/shop/ShopCategoriesPage';
+// import AdminSettingsPage from './pages/shop/ShopSettingsPage';
+
+// ─── App ─────────────────────────────────────────────────────────────────
 const App: React.FC = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(getCurrentUser());
+    const token = getToken();
+    if(token){
+      setToken(token);
+    }
+  }, []);
+
   return (
     <BrowserRouter>
       <Toaster
@@ -55,27 +69,32 @@ const App: React.FC = () => {
         }}
       />
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<LandingPage/>} index/>
+        <Route path="/customers/browse-shops" element={<ShopBrowsePage/>} />
+
+        {/* Auth Routes */}
         <Route path="/shops/register" element={<SignupPage/>} />
         <Route path="/customers/register" element={<SignupPage/>} />
         <Route path="/shops/login" element={<LoginPage/>} />
         <Route path="/customers/login" element={<LoginPage/>} />
 
         {/* ─── Customer Routes ─────────────────────────── */}
-        <Route path='/browse-shops' element={<ShopBrowsePage/>} />
+        {/* <Route path='/browse-shops' element={<ShopBrowsePage/>} />
         <Route path="/shops/:shopId" element={<ShopPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/success" element={<OrderSuccessPage />} />
         <Route path="/track/:orderId" element={<OrderTrackingPage />} />
-        <Route path="/orders" element={<OrderHistoryPage />} />
+        <Route path="/orders" element={<OrderHistoryPage />} /> */}
 
         {/* ─── Shop Routes ────────────────────────────── */}
-        <Route path="/shops/dashboard" element={<ProtectedRoute><ShopDashboardLayout title='Dashboard'><ShopDashboard /></ShopDashboardLayout></ProtectedRoute>} />
-        <Route path="/shops/orders" element=  {<ProtectedRoute><ShopDashboardLayout title='Orders'><AdminOrdersPage /></ShopDashboardLayout></ProtectedRoute>} />
+        <Route path="/shops/dashboard" element={<ProtectedRoute><ShopDashboardLayout title='Dashboard'>Hii</ShopDashboardLayout></ProtectedRoute>} />
+
+        {/* <Route path="/shops/orders" element=  {<ProtectedRoute><ShopDashboardLayout title='Orders'><AdminOrdersPage /></ShopDashboardLayout></ProtectedRoute>} />
         <Route path="/shops/products" element={<ProtectedRoute><ShopDashboardLayout title='Products'><AdminProductsPage /></ShopDashboardLayout></ProtectedRoute>} />
         <Route path="/shops/categories" element={<ProtectedRoute><ShopDashboardLayout title='Categories'><AdminCategoriesPage /></ShopDashboardLayout></ProtectedRoute>} />
-        <Route path="/shops/settings" element={<ProtectedRoute><ShopDashboardLayout title='Settings'><AdminSettingsPage /></ShopDashboardLayout></ProtectedRoute>} />
+        <Route path="/shops/settings" element={<ProtectedRoute><ShopDashboardLayout title='Settings'><AdminSettingsPage /></ShopDashboardLayout></ProtectedRoute>} /> */}
 
         {/* Fallback */}
         {/* <Route path="*" element={<Navigate to="/" replace />} /> */}

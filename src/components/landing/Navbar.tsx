@@ -90,7 +90,7 @@ const Navbar = () => {
 
         {/* CTA + Mobile Menu */}
         <div className="flex items-center gap-2">
-          <Link to="/browse-shops">
+          <Link to="/customers/browse-shops">
             <Button size="md">Browse Shops</Button>
           </Link>
 
