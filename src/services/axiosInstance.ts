@@ -2,12 +2,12 @@ import axios from "axios";
 import { getToken, setToken } from "../utils/tokenManager";
 
 const api = axios.create({
-    baseURL: "http://localhost:3000/api/v1",
+    baseURL: import.meta.env.VITE_API_BASE_URL,
     headers: {
         "Content-Type": "application/json",
     },
     withCredentials: true,
-    timeout: 5000,
+    timeout: 10000,
 });
 
 api.interceptors.request.use(
@@ -32,38 +32,55 @@ api.interceptors.response.use(
 
         if (!originalRequest) return Promise.reject(error);
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        const is401 = error.response?.status === 401;
+        const isRetry = originalRequest._retry;
+        const isRotateRequest = originalRequest.url?.includes("rotate-token");
+
+        if (is401 && !isRetry && !isRotateRequest) {
             originalRequest._retry = true;
 
             try {
-                const response = await axios.get("/auth/rotate-token", {
-                    baseURL: "http://localhost:3000/api/v1",
-                    withCredentials: true,
-                    timeout: 5000,
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                });
+                const response = await axios.post(
+                    "/auth/rotate-token",
+                    {},
+                    {
+                        baseURL: import.meta.env.VITE_API_BASE_URL,
+                        withCredentials: true,
+                        timeout: 10000,
+                    },
+                );
 
-                const token = response.data.token;
+                const newToken = response.data.token;
 
-                setToken(token);
+                setToken(newToken);
 
-                originalRequest.headers = {
-                    ...originalRequest.headers,
-                    Authorization: `Bearer ${token}`,
-                };
+                originalRequest.headers.Authorization = `Bearer ${newToken}`;
 
                 return api(originalRequest);
             } catch (error) {
-                console.log("Rotate token failed");
                 setToken(null);
+                window.location.href = "/login";
                 return Promise.reject(error);
             }
         }
 
         return Promise.reject(error);
     },
+);
+
+export const uploadApi = axios.create({
+    baseURL: import.meta.env.VITE_API_BASE_URL,
+    withCredentials: true,
+    timeout: 30000,
+});
+
+uploadApi.interceptors.request.use(
+    (config) => {
+        const token = getToken();
+        if (token) config.headers.Authorization = `Bearer ${token}`;
+        return config;
+    },
+    (error) => Promise.reject(error),
 );
 
 export default api;
