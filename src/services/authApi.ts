@@ -19,7 +19,12 @@ export const loginUserApi = async (data: {
 };
 
 export const getCurrentUserApi = async () => {
-    const response = await api.get("/auth/get-me");
+    const response = await api.get("/auth/me");
+    return response.data;
+};
+
+export const rotateTokenApi = async () => {
+    const response = await api.post("/auth/rotate-token", {});
     return response.data;
 };
 
