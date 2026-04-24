@@ -1,9 +1,28 @@
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import Button from "../ui/Button";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 const HeroSection = () => {
+    const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+
     const navigate = useNavigate();
+
+    const handleCustomerCTA = () => {
+        navigate(
+            isAuthenticated && user?.role === "customer"
+                ? "/customers/browse-shops"
+                : "/customers/register",
+        );
+    };
+
+    const handleShopCTA = () => {
+        navigate(
+            isAuthenticated && user?.role === "shopOwner"
+                ? "/shops/dashboard"
+                : "/shops/register",
+        );
+    };
 
     return (
         <section className="min-h-screen flex items-start md:items-center pt-2 md:pt-0 bg-linear-to-b from-red-50 via-white to-white">
@@ -40,14 +59,18 @@ const HeroSection = () => {
                         className="flex gap-3 text-center justify-center lg:justify-start"
                     >
                         <Button
-                            onClick={() => navigate("/customers/browse-shops")}
+                            onClick={handleCustomerCTA}
                             size="lg"
                         >
-                            Browse Shops
+                            {isAuthenticated && user?.role === "customer" ? "Browse Shops" : "Get Started"}
                         </Button>
 
-                        <Button onClick={() => navigate("/shops/register")} variant="outline" size="lg">
-                            Open Your Shop
+                        <Button
+                            onClick={handleShopCTA}
+                            variant="outline"
+                            size="lg"
+                        >
+                            {isAuthenticated && user?.role === "shopOwner" ? "My Dashboard" : "Open Your Shop"}
                         </Button>
                     </motion.div>
 
@@ -79,7 +102,7 @@ const HeroSection = () => {
                     <motion.div
                         animate={{ y: [0, -10, 0] }}
                         transition={{ duration: 4, repeat: Infinity }}
-                        className="bg-white border border-gray-100 rounded-2xl shadow-xl p-5 w-75"
+                        className="bg-white border border-gray-100 rounded-2xl shadow-xl p-5 w-72"
                     >
                         <div className="flex justify-between items-center mb-4">
                             <p className="font-semibold text-sm">
