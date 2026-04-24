@@ -1,7 +1,33 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import type { UserRole } from "./authTypes";
-import { getCurrentUserApi, loginUserApi, logoutAllDevicesApi, logoutUserApi, registerUserApi } from "../../services/authApi";
+import {
+    registerUserApi,
+    loginUserApi,
+    getCurrentUserApi,
+    rotateTokenApi,
+    logoutUserApi,
+    logoutAllDevicesApi,
+} from "../../services/authApi";
+import { setToken } from "../../utils/tokenManager";
+
+export const initializeAuth = createAsyncThunk(
+    "auth/initialize",
+    async (_, { rejectWithValue }) => {
+        try {
+            const rotateResponse = await rotateTokenApi();
+            setToken(rotateResponse.token);
+
+            const userResponse = await getCurrentUserApi();
+            return {
+                token: rotateResponse.token,
+                user: userResponse.user,
+            };
+        } catch (error) {
+            return rejectWithValue(null);
+        }
+    },
+);
 
 export const registerUser = createAsyncThunk(
     "auth/registerUser",
@@ -10,22 +36,23 @@ export const registerUser = createAsyncThunk(
             fullName: string;
             email: string;
             password: string;
-            role: UserRole
+            role: UserRole;
         },
         { rejectWithValue },
     ) => {
         try {
             const response = await registerUserApi(data);
+            setToken(response.token);
 
             return {
                 user: response.user,
                 token: response.token,
             };
         } catch (error) {
-            if(axios.isAxiosError(error)){
+            if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message);
             }
-            
+
             return rejectWithValue("Unknown Error");
         }
     },
@@ -36,6 +63,7 @@ export const loginUser = createAsyncThunk(
     async (data: { email: string; password: string }, { rejectWithValue }) => {
         try {
             const response = await loginUserApi(data);
+            setToken(response.token);
 
             return {
                 user: response.user,
@@ -51,31 +79,14 @@ export const loginUser = createAsyncThunk(
     },
 );
 
-export const getCurrentUser = createAsyncThunk(
-    "auth/getCurrentUser",
-    async (_, { rejectWithValue }) => {
-        try {
-            const response = await getCurrentUserApi();
-            return {
-                user: response.user
-            }
-        } catch (error) {
-            if(axios.isAxiosError(error)){
-                return rejectWithValue(error.response?.data?.message);
-            }
-
-            return rejectWithValue("Unknown error")
-        }
-    },
-);
-
 export const logoutUser = createAsyncThunk(
     "auth/logoutUser",
     async (_, { rejectWithValue }) => {
         try {
             await logoutUserApi();
+            setToken(null);
         } catch (error) {
-            if(axios.isAxiosError(error)){
+            if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message);
             }
 
@@ -89,8 +100,9 @@ export const logoutAllDevices = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             await logoutAllDevicesApi();
+            setToken(null);
         } catch (error) {
-            if(axios.isAxiosError(error)){
+            if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message);
             }
 
