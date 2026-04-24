@@ -1,4 +1,4 @@
-export type UserRole = "admin" | "customer" | "shop";
+export type UserRole = "admin" | "customer" | "shopOwner";
 
 export interface BaseUser {
     id: string;
@@ -9,23 +9,17 @@ export interface BaseUser {
 
 export interface Admin extends BaseUser {
     role: "admin";
-    permissions?: string[];
 }
 
 export interface Customer extends BaseUser {
     role: "customer";
-    phone?: string;
-    addresses?: string[];
 }
 
-export interface Shop extends BaseUser {
-    role: "shop";
-    shopName: string;
-    isOpen: boolean;
-    deliveryFee: number;
+export interface ShopOwner extends BaseUser {
+    role: "shopOwner";
 }
 
-export type User = Admin | Customer | Shop;
+export type User = Admin | Customer | ShopOwner;
 
 export interface AuthState {
     user: User | null;
@@ -33,4 +27,5 @@ export interface AuthState {
     status: "idle" | "loading" | "success" | "failed";
     error: string | null;
     isAuthenticated: boolean;
+    isInitialized: boolean;
 }
