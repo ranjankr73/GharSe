@@ -3,11 +3,10 @@ import { BrowserRouter, Routes, Route } from 'react-router';
 import { Toaster } from 'react-hot-toast';
 
 import { useAppDispatch } from './hooks/useAppDispatch';
-import { getCurrentUser } from './features/auth/authThunks';
-import { setToken } from './features/auth/authSlice';
-import { getToken } from './utils/tokenManager';
+import { useAppSelector } from './hooks/useAppSelector';
+import { initializeAuth } from './features/auth/authThunks';
 
-// Public Pages
+// Pages
 import LandingPage from './pages/LandingPage';
 import ShopBrowsePage from './pages/customer/ShopBrowsePage';
 import SignupPage from './pages/auth/SignupPage';
@@ -27,23 +26,29 @@ import ProtectedRoute from './components/layout/ProtectedRoute';
 
 // Shops Pages
 import ShopDashboardLayout from './components/layout/ShopDashboardLayout';
+import ShopDashboard from './pages/shop/ShopDashboardPage';
+import AdminSettingsPage from './pages/shop/ShopSettingsPage';
 // import ShopDashboard from './pages/shop/ShopDashboardPage';
 // import AdminOrdersPage from './pages/shop/ShopOrdersPage';
 // import AdminProductsPage from './pages/shop/ShopProductsPage';
 // import AdminCategoriesPage from './pages/shop/ShopCategoriesPage';
-// import AdminSettingsPage from './pages/shop/ShopSettingsPage';
 
 // ─── App ─────────────────────────────────────────────────────────────────
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
+  const { isInitialized } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    dispatch(getCurrentUser());
-    const token = getToken();
-    if(token){
-      setToken(token);
-    }
+    dispatch(initializeAuth());
   }, []);
+
+  if(!isInitialized){
+    return (
+      <div className="h-screen flex items-center justify-center">
+                <div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+    )
+  };
 
   return (
     <BrowserRouter>
@@ -69,11 +74,11 @@ const App: React.FC = () => {
         }}
       />
       <Routes>
-        {/* Public Routes */}
+        {/* Public */}
         <Route path="/" element={<LandingPage/>} index/>
         <Route path="/customers/browse-shops" element={<ShopBrowsePage/>} />
 
-        {/* Auth Routes */}
+        {/* Auth */}
         <Route path="/shops/register" element={<SignupPage/>} />
         <Route path="/customers/register" element={<SignupPage/>} />
         <Route path="/shops/login" element={<LoginPage/>} />
@@ -88,13 +93,14 @@ const App: React.FC = () => {
         <Route path="/track/:orderId" element={<OrderTrackingPage />} />
         <Route path="/orders" element={<OrderHistoryPage />} /> */}
 
-        {/* ─── Shop Routes ────────────────────────────── */}
-        <Route path="/shops/dashboard" element={<ProtectedRoute><ShopDashboardLayout title='Dashboard'>Hii</ShopDashboardLayout></ProtectedRoute>} />
-
-        {/* <Route path="/shops/orders" element=  {<ProtectedRoute><ShopDashboardLayout title='Orders'><AdminOrdersPage /></ShopDashboardLayout></ProtectedRoute>} />
+          {/* ─── Shop Routes ────────────────────────────── */}
+          <Route path="/shops/dashboard" element={<ProtectedRoute><ShopDashboardLayout title='Dashboard'><ShopDashboard/></ShopDashboardLayout></ProtectedRoute>} />
+          <Route path="/shops/settings" element={<ProtectedRoute><ShopDashboardLayout title='Settings'><AdminSettingsPage /></ShopDashboardLayout></ProtectedRoute>} />
+          {/* <Route path="/shops/orders" element=  {<ProtectedRoute><ShopDashboardLayout title='Orders'><AdminOrdersPage /></ShopDashboardLayout></ProtectedRoute>} />
         <Route path="/shops/products" element={<ProtectedRoute><ShopDashboardLayout title='Products'><AdminProductsPage /></ShopDashboardLayout></ProtectedRoute>} />
         <Route path="/shops/categories" element={<ProtectedRoute><ShopDashboardLayout title='Categories'><AdminCategoriesPage /></ShopDashboardLayout></ProtectedRoute>} />
-        <Route path="/shops/settings" element={<ProtectedRoute><ShopDashboardLayout title='Settings'><AdminSettingsPage /></ShopDashboardLayout></ProtectedRoute>} /> */}
+         */}
+
 
         {/* Fallback */}
         {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
