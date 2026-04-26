@@ -59,15 +59,11 @@ const Navbar = () => {
     };
 
     const handleCTA = () => {
-        if (isAuthenticated) {
-            navigate(
-                user?.role === "shopOwner"
-                    ? "/shops/dashboard"
-                    : "/customers/browse-shops",
-            );
-        } else {
-            navigate("/customers/browse-shops");
-        }
+        navigate(
+            user?.role === "shopOwner"
+                ? "/shops/dashboard"
+                : "/customers/browse-shops",
+        );
     };
 
     return (
@@ -112,9 +108,28 @@ const Navbar = () => {
 
                 {/* CTA + Mobile Menu */}
                 <div className="flex items-center gap-2">
-                    <Button size="md" onClick={handleCTA}>
-                        {isAuthenticated ? "Dashboard" : "Browse Shops"}
-                    </Button>
+                    {isAuthenticated ? (
+                        <Button size="md" onClick={handleCTA}>
+                            {user?.role === "shopOwner"
+                                ? "Dashboard"
+                                : "Browse Shops"}
+                        </Button>
+                    ) : (
+                        <>
+                            <Button
+                                size="md"
+                                onClick={() => navigate("/customers/login")}
+                            >
+                                For Customer
+                            </Button>
+                            <Button
+                                size="md"
+                                onClick={() => navigate("/shops/login")}
+                            >
+                                For Shop
+                            </Button>
+                        </>
+                    )}
 
                     {/* Mobile toggle */}
                     <button
