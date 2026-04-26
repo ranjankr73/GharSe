@@ -37,7 +37,7 @@ const AuthForm = () => {
         await dispatch(loginUser({ email, password })).unwrap();
         toast.success("Welcome back 👋");
       } else {
-        const userRole: UserRole = role === "customers" ? "customer" : "shop";
+        const userRole: UserRole = role === "customers" ? "customer" : "shopOwner";
         await dispatch(registerUser({ fullName, email, password, role: userRole })).unwrap();
         toast.success("Account created 🎉");
       }
