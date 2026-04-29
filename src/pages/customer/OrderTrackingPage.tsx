@@ -1,217 +1,270 @@
-import React, { useEffect } from "react";
-import { useNavigate, useParams } from "react-router";
-import { useAppDispatch, useAppSelector } from "../../hooks";
-import { fetchOrder } from "../../redux/slices/orderSlice";
+// pages/customer/OrderTrackingPage.tsx
+import { useEffect } from "react";
+import { useParams, useNavigate } from "react-router";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { getMyOrderById, cancelMyOrder } from "../../features/customerOrder/customerOrderThunks";
+import Badge from "../../components/ui/Badge";
+import Spinner from "../../components/ui/Spinner";
+import { formatCurrency } from "../../utils/formatCurrency";
+import { ArrowLeft, MapPin, Phone } from "lucide-react";
+import toast from "react-hot-toast";
 
-import CustomerNavbar from "../../components/layout/CustomerNavbar";
-import StepTracker from "../../components/ui/StepTracker";
-import Skeleton from "../../components/ui/Skeleton";
-import StatusBadge from "../../components/ui/StatusBadge";
-import Button from "../../components/ui/Button";
+const TIMELINE_STEPS = [
+    { key: "placedAt", label: "Order Placed", icon: "📋" },
+    { key: "confirmedAt", label: "Confirmed", icon: "✅" },
+    { key: "preparingAt", label: "Preparing", icon: "👨‍🍳" },
+    { key: "readyAt", label: "Ready", icon: "📦" },
+    { key: "pickedUpAt", label: "Picked Up", icon: "🛵" },
+    { key: "outForDeliveryAt", label: "Out for Delivery", icon: "🚀" },
+    { key: "deliveredAt", label: "Delivered", icon: "🎉" },
+];
 
-import { formatCurrency, formatDate } from "../../utils";
+const STATUS_BADGE: Record<
+    string,
+    "green" | "yellow" | "red" | "blue" | "gray" | "orange"
+> = {
+    PENDING: "yellow",
+    CONFIRMED: "blue",
+    PREPARING: "orange",
+    READY: "green",
+    PICKED_UP: "blue",
+    OUT_FOR_DELIVERY: "blue",
+    DELIVERED: "green",
+    CANCELLED: "red",
+};
 
-const OrderTrackingPage: React.FC = () => {
-    const { orderId } = useParams<{ orderId: string }>();
+const OrderTrackingPage = () => {
+    const { orderId } = useParams();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    const { activeOrder, status } = useAppSelector((s) => s.customerOrder);
 
-    const { currentOrder, loading, error } = useAppSelector((s) => s.orders);
-
-    useEffect(() => {
-        if (orderId) dispatch(fetchOrder(orderId));
-    }, [dispatch, orderId]);
-
-    // Auto refresh
     useEffect(() => {
         if (!orderId) return;
-        const interval = setInterval(
-            () => dispatch(fetchOrder(orderId)),
-            30000,
-        );
+        dispatch(getMyOrderById(orderId));
+
+        // Poll every 30s for status updates
+        const interval = setInterval(() => {
+            dispatch(getMyOrderById(orderId));
+        }, 30000);
+
         return () => clearInterval(interval);
-    }, [dispatch, orderId]);
+    }, [orderId, dispatch]);
+
+    const handleCancel = async () => {
+        if (!orderId) return;
+        const reason = prompt("Why do you want to cancel?");
+        if (reason === null) return;
+        const result = await dispatch(
+            cancelMyOrder({ orderId, reason: reason || "Cancelled by customer" })
+        );
+        if (cancelMyOrder.fulfilled.match(result)) {
+            toast.success("Order cancelled");
+        } else {
+            toast.error(result.payload as string ?? "Cannot cancel at this stage");
+        }
+    };
+
+    if (status === "loading" || !activeOrder) {
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <Spinner size="lg" />
+            </div>
+        );
+    }
+
+    const order = activeOrder;
+    const shop = typeof order.shop === "object" ? order.shop : null;
+    const canCancel = ["PENDING", "CONFIRMED", "PREPARING"].includes(
+        order.status
+    );
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-32 md:pt-14">
-            {/* 🔥 HEADER */}
-            <header className="sticky top-0 md:top-14 z-20 bg-white border-b border-gray-100 px-4 py-4 flex items-center gap-3">
-                <button
-                    onClick={() => navigate(-1)}
-                    className="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center cursor-pointer"
-                >
-                    ←
-                </button>
-
-                <div>
-                    <h1 className="text-lg font-semibold text-gray-800">
-                        Track Order
-                    </h1>
-                    {currentOrder && (
+        <div className="min-h-screen bg-gray-50">
+            {/* Header */}
+            <div className="bg-white border-b border-gray-100 sticky top-0 z-30">
+                <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-3">
+                    <button
+                        onClick={() => navigate("/user/orders")}
+                        className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 cursor-pointer"
+                    >
+                        <ArrowLeft size={16} />
+                    </button>
+                    <div className="flex-1">
+                        <h1 className="text-base font-bold text-gray-900">
+                            Track Order
+                        </h1>
                         <p className="text-xs text-gray-400 font-mono">
-                            #{currentOrder.id}
+                            #{order._id.slice(-6).toUpperCase()}
                         </p>
-                    )}
+                    </div>
+                    <Badge
+                        label={order.status.replace(/_/g, " ")}
+                        variant={STATUS_BADGE[order.status] ?? "gray"}
+                    />
                 </div>
-            </header>
-
-            <div className="max-w-2xl mx-auto px-4 mt-5 space-y-4">
-                {/* 🔄 LOADING */}
-                {loading && !currentOrder ? (
-                    <div className="space-y-3">
-                        <Skeleton className="h-32" />
-                        <Skeleton className="h-32" />
-                    </div>
-                ) : error ? (
-                    <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
-                        <p className="text-red-600 font-semibold">
-                            Order not found
-                        </p>
-                        <p className="text-red-500 text-sm mt-1">{error}</p>
-
-                        <Button
-                            onClick={() => navigate("/orders")}
-                            variant="outline"
-                            size="sm"
-                            className="mt-4"
-                        >
-                            View Orders
-                        </Button>
-                    </div>
-                ) : currentOrder ? (
-                    <>
-                        {/* 📦 STATUS */}
-                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                            <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-sm font-medium text-gray-800">
-                                    Order Status
-                                </h2>
-                                <StatusBadge status={currentOrder.status} />
-                            </div>
-
-                            <StepTracker status={currentOrder.status} />
-                        </div>
-
-                        {/* 🚚 DELIVERY INFO */}
-                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                            <h2 className="text-sm font-medium text-gray-800 mb-4">
-                                Delivery Details
-                            </h2>
-
-                            <div className="space-y-3 text-sm">
-                                <InfoRow
-                                    label="Name"
-                                    value={currentOrder.customerName}
-                                />
-                                <InfoRow
-                                    label="Phone"
-                                    value={currentOrder.phone}
-                                />
-                                <InfoRow
-                                    label="Address"
-                                    value={currentOrder.address}
-                                />
-
-                                {currentOrder.note && (
-                                    <InfoRow
-                                        label="Note"
-                                        value={currentOrder.note}
-                                        subtle
-                                    />
-                                )}
-
-                                <InfoRow
-                                    label="Placed at"
-                                    value={formatDate(currentOrder.createdAt)}
-                                />
-                            </div>
-                        </div>
-
-                        {/* 🛒 ITEMS */}
-                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                            <h2 className="text-sm font-medium text-gray-800 mb-4">
-                                Order Summary
-                            </h2>
-
-                            <div className="space-y-3">
-                                {currentOrder.items.map((item, i) => (
-                                    <div
-                                        key={i}
-                                        className="flex justify-between items-center text-sm"
-                                    >
-                                        <span className="text-gray-700">
-                                            {item.productName}{" "}
-                                            <span className="text-gray-400">
-                                                ×{item.quantity}
-                                            </span>
-                                        </span>
-
-                                        <span className="font-medium text-gray-900">
-                                            {formatCurrency(
-                                                item.price * item.quantity,
-                                            )}
-                                        </span>
-                                    </div>
-                                ))}
-
-                                <div className="border-t border-dashed border-gray-200 pt-3 flex justify-between text-sm">
-                                    <span className="text-gray-500">
-                                        Delivery fee
-                                    </span>
-                                    <span className="font-medium text-gray-800">
-                                        {formatCurrency(
-                                            currentOrder.deliveryFee,
-                                        )}
-                                    </span>
-                                </div>
-
-                                <div className="flex justify-between pt-1">
-                                    <span className="font-semibold text-gray-900">
-                                        Total
-                                    </span>
-                                    <span className="text-lg font-semibold text-gray-900">
-                                        {formatCurrency(
-                                            currentOrder.totalAmount +
-                                                currentOrder.deliveryFee,
-                                        )}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* ⏱ FOOTER NOTE */}
-                        <p className="text-center text-xs text-gray-400 pb-2">
-                            Updates every 30 seconds
-                        </p>
-                    </>
-                ) : null}
             </div>
 
-            <CustomerNavbar />
+            <div className="max-w-2xl mx-auto px-4 py-6 space-y-5">
+                {/* Status timeline */}
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                    <h2 className="text-sm font-semibold text-gray-800 mb-5">
+                        Order Status
+                    </h2>
+                    <div className="space-y-4">
+                        {TIMELINE_STEPS.map((step, i) => {
+                            const time =
+                                order.statusTimeline[
+                                    step.key as keyof typeof order.statusTimeline
+                                ];
+                            const isDone = !!time;
+                            const isLast = i === TIMELINE_STEPS.length - 1;
+
+                            return (
+                                <div key={step.key} className="flex items-start gap-4">
+                                    <div className="flex flex-col items-center">
+                                        <div
+                                            className={`w-9 h-9 rounded-full flex items-center justify-center text-lg shrink-0 ${
+                                                isDone
+                                                    ? "bg-green-100"
+                                                    : "bg-gray-100"
+                                            }`}
+                                        >
+                                            {isDone ? step.icon : (
+                                                <div className="w-3 h-3 rounded-full bg-gray-300" />
+                                            )}
+                                        </div>
+                                        {!isLast && (
+                                            <div
+                                                className={`w-0.5 h-6 mt-1 ${
+                                                    isDone
+                                                        ? "bg-green-300"
+                                                        : "bg-gray-200"
+                                                }`}
+                                            />
+                                        )}
+                                    </div>
+                                    <div className="pt-1.5">
+                                        <p
+                                            className={`text-sm font-medium ${
+                                                isDone
+                                                    ? "text-gray-800"
+                                                    : "text-gray-400"
+                                            }`}
+                                        >
+                                            {step.label}
+                                        </p>
+                                        {time && (
+                                            <p className="text-xs text-gray-400 mt-0.5">
+                                                {new Date(time).toLocaleTimeString(
+                                                    "en-IN",
+                                                    {
+                                                        hour: "2-digit",
+                                                        minute: "2-digit",
+                                                    }
+                                                )}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Shop info */}
+                {shop && (
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                        <h2 className="text-sm font-semibold text-gray-800 mb-3">
+                            Shop Details
+                        </h2>
+                        <div className="flex items-center gap-3">
+                            {shop.logo && (
+                                <img
+                                    src={shop.logo}
+                                    alt={shop.name}
+                                    className="w-10 h-10 rounded-xl object-cover"
+                                />
+                            )}
+                            <div>
+                                <p className="text-sm font-medium text-gray-800">
+                                    {shop.name}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Delivery address */}
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                    <h2 className="text-sm font-semibold text-gray-800 mb-3">
+                        Delivery Address
+                    </h2>
+                    <div className="flex items-start gap-2 text-sm text-gray-600">
+                        <MapPin size={14} className="text-gray-400 mt-0.5 shrink-0" />
+                        <span>
+                            {order.deliveryAddress.addressLine},{" "}
+                            {order.deliveryAddress.city},{" "}
+                            {order.deliveryAddress.state} -{" "}
+                            {order.deliveryAddress.pinCode}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Order items */}
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                    <h2 className="text-sm font-semibold text-gray-800 mb-3">
+                        Order Items
+                    </h2>
+                    <div className="space-y-3">
+                        {order.items.map((item) => (
+                            <div
+                                key={item._id}
+                                className="flex justify-between text-sm"
+                            >
+                                <span className="text-gray-700">
+                                    {item.snapshot.name}{" "}
+                                    <span className="text-gray-400">
+                                        ×{item.quantity}
+                                    </span>
+                                </span>
+                                <span className="font-medium">
+                                    {formatCurrency(
+                                        item.snapshot.price * item.quantity
+                                    )}
+                                </span>
+                            </div>
+                        ))}
+                        <div className="border-t border-gray-100 pt-3 flex justify-between font-semibold text-gray-900">
+                            <span>Total</span>
+                            <span>{formatCurrency(order.pricing.total)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Cancel button */}
+                {canCancel && (
+                    <button
+                        onClick={handleCancel}
+                        className="w-full py-3 text-sm font-medium text-red-500 border border-red-200 rounded-2xl hover:bg-red-50 transition cursor-pointer"
+                    >
+                        Cancel Order
+                    </button>
+                )}
+
+                {/* Review button */}
+                {order.status === "DELIVERED" && !order.isReviewed && (
+                    <button
+                        onClick={() => navigate(`/user/review/${order._id}`)}
+                        className="w-full py-3 text-sm font-medium text-white bg-red-500 rounded-2xl hover:bg-red-600 transition cursor-pointer"
+                    >
+                        Rate Your Order ⭐
+                    </button>
+                )}
+            </div>
         </div>
     );
 };
-
-/* 🔹 Reusable row */
-const InfoRow = ({
-    label,
-    value,
-    subtle,
-}: {
-    label: string;
-    value: string;
-    subtle?: boolean;
-}) => (
-    <div className="flex gap-2">
-        <span className="text-gray-400 w-24 shrink-0">{label}</span>
-        <span
-            className={`${
-                subtle ? "text-gray-500 italic" : "text-gray-800 font-medium"
-            }`}
-        >
-            {value}
-        </span>
-    </div>
-);
 
 export default OrderTrackingPage;

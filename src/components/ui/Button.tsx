@@ -1,7 +1,7 @@
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "ghost" | "danger" | "outline";
   size?: "sm" | "md" | "lg";
-  loading?: boolean;
+  isLoading?: boolean;
   fullWidth?: boolean;
   icon?: React.ReactNode;
 }
@@ -10,7 +10,7 @@ const Button: React.FC<ButtonProps> = ({
   children,
   variant = "primary",
   size = "md",
-  loading = false,
+  isLoading = false,
   fullWidth = false,
   icon,
   className = "",
@@ -46,7 +46,7 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <button
       {...props}
-      disabled={disabled || loading}
+      disabled={disabled || isLoading}
       className={`
         ${base}
         ${variants[variant]}
@@ -56,7 +56,7 @@ const Button: React.FC<ButtonProps> = ({
       `}
     >
       {/* Spinner */}
-      {loading ? (
+      {isLoading ? (
         <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
       ) : (
         icon && <span className="text-lg">{icon}</span>

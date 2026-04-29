@@ -1,157 +1,159 @@
-import { useState } from "react";
-import CustomerNavbar from "../../components/layout/CustomerNavbar";
+import { useEffect, useState } from "react";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { getPublicShops } from "../../features/publicShop/publicShopThunks";
+import { getCategories } from "../../features/category/categoryThunks";
 import ShopCard from "../../components/customer/ShopCard";
-import InputField from "../../components/ui/InputField";
+import Spinner from "../../components/ui/Spinner";
 import EmptyState from "../../components/ui/EmptyState";
-import Toggle from "../../components/ui/Toggle";
-import Button from "../../components/ui/Button";
-
-const categories = ["All", "Grocery", "Bakery", "Dairy", "Snacks"];
+import { Search } from "lucide-react";
 
 const ShopBrowsePage = () => {
+    const dispatch = useAppDispatch();
+    const { shops, status, total, totalPages, page } = useAppSelector(
+        (s) => s.publicShop
+    );
+    const { categories } = useAppSelector((s) => s.category);
+
     const [search, setSearch] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("All");
-    const [onlyOpen, setOnlyOpen] = useState(false);
-    const [onlyVeg, setOnlyVeg] = useState(false);
+    const [city, setCity] = useState("");
+    const [categoryFilter, setCategoryFilter] = useState("");
+    const [isOpenFilter, setIsOpenFilter] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
 
-    // dummy data
-    const shops = [
-        {
-            id: "1",
-            name: "Fresh Basket",
-            category: "Grocery",
-            rating: 4.5,
-            isOpen: true,
-            isVeg: true,
-            deliveryTime: "30–40 min",
-        },
-        {
-            id: "2",
-            name: "Daily Dairy",
-            category: "Dairy",
-            rating: 4.2,
-            isOpen: false,
-            isVeg: true,
-            deliveryTime: "20–30 min",
-        },
-        {
-            id: "3",
-            name: "Daily Dairy",
-            category: "Dairy",
-            rating: 4.2,
-            isOpen: false,
-            isVeg: true,
-            deliveryTime: "20–30 min",
-        },
-        {
-            id: "4",
-            name: "Daily Dairy",
-            category: "Dairy",
-            rating: 4.2,
-            isOpen: false,
-            isVeg: true,
-            deliveryTime: "20–30 min",
-        },
-        {
-            id: "5",
-            name: "Daily Dairy",
-            category: "Dairy",
-            rating: 4.2,
-            isOpen: false,
-            isVeg: true,
-            deliveryTime: "20–30 min",
-        },
-        {
-            id: "6",
-            name: "Daily Dairy",
-            category: "Dairy",
-            rating: 4.2,
-            isOpen: false,
-            isVeg: true,
-            deliveryTime: "20–30 min",
-        },
-    ];
+    useEffect(() => {
+        dispatch(getCategories());
+    }, [dispatch]);
 
-    const filtered = shops.filter((shop) => {
-        return (
-            shop.name.toLowerCase().includes(search.toLowerCase()) &&
-            (selectedCategory === "All" ||
-                shop.category === selectedCategory) &&
-            (!onlyOpen || shop.isOpen) &&
-            (!onlyVeg || shop.isVeg)
-        );
-    });
+    useEffect(() => {
+        const params: Record<string, string | number> = {
+            page: currentPage,
+            limit: 12,
+        };
+        if (search) params.search = search;
+        if (city) params.city = city;
+        if (isOpenFilter) params.isOpen = "true";
+        dispatch(getPublicShops(params));
+    }, [currentPage, search, city, isOpenFilter, dispatch]);
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-32 md:pt-14">
-            {/* 🔥 HEADER */}
-            <header className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-4 md:hidden">
-                <h1 className="text-lg font-semibold">Browse Shops</h1>
-            </header>
+        <div className="min-h-screen bg-gray-50">
+            {/* Header */}
+            <div className="bg-white border-b border-gray-100 sticky top-0 z-30">
+                <div className="max-w-6xl mx-auto px-4 py-4">
+                    <div className="flex items-center gap-2 mb-1">
+                        <span className="text-lg font-bold">
+                            <span className="text-gray-800">Ghar</span>
+                            <span className="text-red-500">Se</span>
+                        </span>
+                    </div>
+                    <h1 className="text-xl font-bold text-gray-900">
+                        Shops near you
+                    </h1>
 
-            {/* 🔥 CONTENT */}
-            <div className="max-w-5xl mx-auto px-4 mt-4 space-y-4">
-                {/* 🔍 SEARCH */}
-                <InputField
-                    label="Search shops"
-                    placeholder="Search by shop name..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
+                    {/* Search */}
+                    <div className="relative mt-3">
+                        <Search
+                            size={15}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Search shops..."
+                            value={search}
+                            onChange={(e) => {
+                                setSearch(e.target.value);
+                                setCurrentPage(1);
+                            }}
+                            className="w-full pl-9 pr-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-300"
+                        />
+                    </div>
 
-                {/* 🏷️ CATEGORIES */}
-                <div className="flex gap-2 overflow-x-auto p-1 snap-x snap-start">
-                    {categories.map((cat) => {
-                        const isActive = selectedCategory === cat;
-
-                        return (
-                            <Button
-                                key={cat}
-                                size="sm"
-                                variant={isActive ? "primary" : "outline"}
-                                onClick={() => setSelectedCategory(cat)}
-                                className={`
-          rounded-full whitespace-nowrap px-4 py-1.5 text-xs
-          ${isActive ? "shadow-sm" : "border-gray-200 text-gray-600 hover:bg-gray-100"}
-        `}
+                    {/* Filters */}
+                    <div className="flex gap-2 mt-3 overflow-x-auto pb-1 scrollbar-hide">
+                        <button
+                            onClick={() => {
+                                setIsOpenFilter(!isOpenFilter);
+                                setCurrentPage(1);
+                            }}
+                            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition cursor-pointer ${
+                                isOpenFilter
+                                    ? "bg-red-500 text-white"
+                                    : "bg-white border border-gray-200 text-gray-600"
+                            }`}
+                        >
+                            Open Now
+                        </button>
+                        {categories.map((c) => (
+                            <button
+                                key={c._id}
+                                onClick={() => {
+                                    setCategoryFilter(
+                                        categoryFilter === c._id ? "" : c._id
+                                    );
+                                    setCurrentPage(1);
+                                }}
+                                className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition cursor-pointer ${
+                                    categoryFilter === c._id
+                                        ? "bg-red-500 text-white"
+                                        : "bg-white border border-gray-200 text-gray-600"
+                                }`}
                             >
-                                {cat}
-                            </Button>
-                        );
-                    })}
+                                {c.name}
+                            </button>
+                        ))}
+                    </div>
                 </div>
+            </div>
 
-                {/* 🔧 FILTERS */}
-                <div className="flex flex-wrap gap-4 items-center bg-white p-3 rounded-xl border border-gray-100">
-                    <Toggle
-                        checked={onlyOpen}
-                        onChange={setOnlyOpen}
-                        label="Open now"
-                    />
-                    <Toggle
-                        checked={onlyVeg}
-                        onChange={setOnlyVeg}
-                        label="Veg only"
-                    />
-                </div>
-
-                {/* 🏪 SHOP LIST */}
-                {filtered.length === 0 ? (
+            {/* Content */}
+            <div className="max-w-6xl mx-auto px-4 py-6">
+                {status === "loading" ? (
+                    <div className="flex justify-center py-16">
+                        <Spinner />
+                    </div>
+                ) : shops.length === 0 ? (
                     <EmptyState
                         icon="🏪"
                         title="No shops found"
-                        description="Try adjusting filters or search"
+                        description="Try adjusting your filters or search"
                     />
                 ) : (
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {filtered.map((shop) => (
-                            <ShopCard key={shop.id} shop={shop} />
-                        ))}
-                    </div>
+                    <>
+                        <p className="text-xs text-gray-400 mb-4">
+                            {total} shops available
+                        </p>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {shops.map((shop) => (
+                                <ShopCard key={shop._id} shop={shop} />
+                            ))}
+                        </div>
+
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="flex justify-center gap-2 mt-8">
+                                <button
+                                    disabled={currentPage === 1}
+                                    onClick={() => setCurrentPage((p) => p - 1)}
+                                    className="px-4 py-2 text-sm rounded-xl border border-gray-200 disabled:opacity-40 cursor-pointer hover:bg-gray-50"
+                                >
+                                    Previous
+                                </button>
+                                <span className="px-4 py-2 text-sm text-gray-500">
+                                    {page} / {totalPages}
+                                </span>
+                                <button
+                                    disabled={currentPage === totalPages}
+                                    onClick={() => setCurrentPage((p) => p + 1)}
+                                    className="px-4 py-2 text-sm rounded-xl border border-gray-200 disabled:opacity-40 cursor-pointer hover:bg-gray-50"
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
-
-            <CustomerNavbar />
         </div>
     );
 };

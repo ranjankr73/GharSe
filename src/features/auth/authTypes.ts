@@ -1,4 +1,4 @@
-export type UserRole = "admin" | "customer" | "shopOwner";
+export type UserRole = "admin" | "customer" | "shopOwner" | "deliveryAgent";
 
 export interface BaseUser {
     id: string;
@@ -19,7 +19,11 @@ export interface ShopOwner extends BaseUser {
     role: "shopOwner";
 }
 
-export type User = Admin | Customer | ShopOwner;
+export interface DeliveryAgent extends BaseUser {
+    role: "deliveryAgent";
+}
+
+export type User = Admin | Customer | ShopOwner | DeliveryAgent;
 
 export interface AuthState {
     user: User | null;

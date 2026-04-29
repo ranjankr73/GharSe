@@ -1,346 +1,237 @@
-import React, { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../hooks";
-import {
-    fetchProducts,
-    createProduct,
-    updateProduct,
-    deleteProduct,
-} from "../../redux/slices/productSlice";
+import { useEffect, useState } from "react";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
-import Modal from "../../components/ui/Modal";
-import Button from "../../components/ui/Button";
-import InputField from "../../components/ui/InputField";
-import TextareaField from "../../components/ui/TextareaField";
-import Toggle from "../../components/ui/Toggle";
+import { getMyProducts, deleteProduct, toggleProductAvailability } from "../../features/product/productThunks";
+import { getCategories, getShopSubCategories } from "../../features/category/categoryThunks";
+import type { Product } from "../../features/product/productTypes";
+
+import ProductCard from "../../components/shop/ProductCard";
+import ProductFormModal from "../../components/shop/ProductFormModal";
+
+import Spinner from "../../components/ui/Spinner";
 import EmptyState from "../../components/ui/EmptyState";
-import Skeleton from "../../components/ui/Skeleton";
-
-import { formatCurrency } from "../../utils";
-import type { Product, ProductForm } from "../../types";
-
+import Button from "../../components/ui/Button";
 import toast from "react-hot-toast";
-import SelectField from "../../components/ui/SelectField";
+import {
+    Plus,
+    Search,
+    Package,
+} from "lucide-react";
 
-const EMPTY_FORM: ProductForm = {
-    name: "",
-    description: "",
-    price: "",
-    categoryId: "",
-    image: "",
-    inStock: true,
-    isVeg: true,
-};
-
-const AdminProductsPage: React.FC = () => {
+const ShopProductsPage = () => {
     const dispatch = useAppDispatch();
-    const { products, categories, loading } = useAppSelector((s) => s.products);
-
-    const [modalOpen, setModalOpen] = useState(false);
-    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-    const [form, setForm] = useState<ProductForm>(EMPTY_FORM);
-    const [submitting, setSubmitting] = useState(false);
+    const { activeShop } = useAppSelector((s) => s.shop);
+    const { products, status, totalProducts, totalPages, page } = useAppSelector((s) => s.product);
 
     const [search, setSearch] = useState("");
-    const [filterCat, setFilterCat] = useState("all");
+    const [categoryFilter, setCategoryFilter] = useState("");
+    const [availabilityFilter, setAvailabilityFilter] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+    const { categories, subCategories } = useAppSelector((s) => s.category);
 
     useEffect(() => {
-        dispatch(fetchProducts("shop-001"));
+        dispatch(getCategories());
     }, [dispatch]);
 
-    const openAdd = () => {
-        setEditingProduct(null);
-        setForm(EMPTY_FORM);
-        setModalOpen(true);
-    };
+    useEffect(() => {
+        if (!activeShop) return;
+        dispatch(getShopSubCategories(activeShop._id));
+    }, [activeShop, dispatch]);
 
-    const openEdit = (product: Product) => {
-        setEditingProduct(product);
-        setForm({
-            name: product.name,
-            description: product.description,
-            price: String(product.price),
-            categoryId: product.categoryId,
-            image: product.image,
-            inStock: product.inStock,
-            isVeg: product.isVeg ?? true,
-        });
-        setModalOpen(true);
-    };
+    useEffect(() => {
+        if (!activeShop) return;
+        dispatch(
+            getMyProducts({
+                shopId: activeShop._id,
+                params: {
+                    page: currentPage,
+                    limit: 12,
+                    ...(search && { search }),
+                    ...(categoryFilter && { categoryId: categoryFilter }),
+                    ...(availabilityFilter !== "" && { isAvailable: availabilityFilter }),
+                },
+            })
+        );
+    }, [activeShop, currentPage, search, categoryFilter, availabilityFilter, dispatch]);
 
-    const handleSubmit = async () => {
-        if (!form.name || !form.price || !form.categoryId) {
-            toast.error("Please fill all required fields");
-            return;
-        }
-
-        setSubmitting(true);
-
-        try {
-            if (editingProduct) {
-                await dispatch(
-                    updateProduct({
-                        id: editingProduct.id,
-                        updates: {
-                            ...form,
-                            price: parseFloat(form.price),
-                        },
-                    }),
-                ).unwrap();
-
-                toast.success("Product updated!");
-            } else {
-                await dispatch(
-                    createProduct({
-                        ...form,
-                        price: parseFloat(form.price),
-                        shopId: "shop-001",
-                        image:
-                            form.image ||
-                            `https://api.dicebear.com/8.x/shapes/svg?seed=${form.name}`,
-                    }),
-                ).unwrap();
-
-                toast.success("Product added!");
-            }
-
-            setModalOpen(false);
-        } catch {
-            toast.error("Something went wrong");
-        } finally {
-            setSubmitting(false);
+    const handleToggleAvailability = async (productId: string) => {
+        if (!activeShop) return;
+        const result = await dispatch(
+            toggleProductAvailability({ shopId: activeShop._id, productId })
+        );
+        if (toggleProductAvailability.fulfilled.match(result)) {
+            toast.success(
+                result.payload.isAvailable ? "Product marked available" : "Product marked unavailable"
+            );
         }
     };
 
-    const handleDelete = async (product: Product) => {
-        if (!confirm(`Delete "${product.name}"?`)) return;
-
-        try {
-            await dispatch(deleteProduct(product.id)).unwrap();
+    const handleDelete = async (productId: string) => {
+        if (!activeShop) return;
+        if (!confirm("Delete this product?")) return;
+        const result = await dispatch(deleteProduct({ shopId: activeShop._id, productId }));
+        if (deleteProduct.fulfilled.match(result)) {
             toast.success("Product deleted");
-        } catch {
-            toast.error("Failed to delete");
+        } else {
+            toast.error("Failed to delete product");
         }
     };
 
-    const filtered = products
-        .filter((p) => filterCat === "all" || p.categoryId === filterCat)
-        .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()));
+    const handleEdit = (product: Product) => {
+        setEditingProduct(product);
+        setIsModalOpen(true);
+    };
+
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+        setEditingProduct(null);
+    };
+
+    if (!activeShop) {
+        return <EmptyState icon="🏪" title="No shop selected" />;
+    }
 
     return (
-        <>
-            {/* 🔥 TOP BAR */}
-            <div className="flex flex-wrap gap-3 mb-5 items-end">
-              <div className="flex-1 min-w-48">
-                <InputField
-                    label=""
-                    placeholder="Search products..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-              </div>
-                
-                <div className="w-48">
-                    <SelectField
-                        label=""
-                        value={filterCat}
-                        onChange={(e) => setFilterCat(e.target.value)}
-                        options={[
-                            { label: "All Categories", value: "all" },
-                            ...categories.map((c) => ({
-                                label: `${c.icon} ${c.name}`,
-                                value: c.id,
-                            })),
-                        ]}
+        <div className="space-y-5">
+            {/* Toolbar */}
+            <div className="flex flex-col sm:flex-row gap-3">
+                {/* Search */}
+                <div className="relative flex-1">
+                    <Search
+                        size={14}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Search products..."
+                        value={search}
+                        onChange={(e) => {
+                            setSearch(e.target.value);
+                            setCurrentPage(1);
+                        }}
+                        className="w-full pl-9 pr-4 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-300"
                     />
                 </div>
 
-                <Button onClick={openAdd}>
-                    + Add Product
+                {/* Category filter */}
+                <select
+                    value={categoryFilter}
+                    onChange={(e) => {
+                        setCategoryFilter(e.target.value);
+                        setCurrentPage(1);
+                    }}
+                    className="text-sm bg-white border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-red-500/20 cursor-pointer"
+                >
+                    <option value="">All Categories</option>
+                    {categories.map((c) => (
+                        <option key={c._id} value={c._id}>
+                            {c.name}
+                        </option>
+                    ))}
+                </select>
+
+                {/* Availability filter */}
+                <select
+                    value={availabilityFilter}
+                    onChange={(e) => {
+                        setAvailabilityFilter(e.target.value);
+                        setCurrentPage(1);
+                    }}
+                    className="text-sm bg-white border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-red-500/20 cursor-pointer"
+                >
+                    <option value="">All</option>
+                    <option value="true">Available</option>
+                    <option value="false">Unavailable</option>
+                </select>
+
+                <Button
+                    onClick={() => setIsModalOpen(true)}
+                    size="md"
+                >
+                    <Plus size={14} className="mr-1.5" />
+                    Add Product
                 </Button>
             </div>
 
-            {/* 📦 PRODUCTS */}
-            {loading ? (
-                <div className="space-y-3">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                        <Skeleton key={i} className="h-16 w-full" />
-                    ))}
+            {/* Stats row */}
+            <div className="flex items-center gap-4 text-xs text-slate-400">
+                <span className="flex items-center gap-1">
+                    <Package size={12} />
+                    {totalProducts} products
+                </span>
+                <span>
+                    Page {page} of {totalPages}
+                </span>
+            </div>
+
+            {/* Product grid */}
+            {status === "loading" ? (
+                <div className="flex justify-center py-16">
+                    <Spinner />
                 </div>
-            ) : filtered.length === 0 ? (
+            ) : products.length === 0 ? (
                 <EmptyState
-                    icon="🛍️"
+                    icon="📦"
                     title="No products found"
-                    description="Add your first product or try a different filter."
-                    action={<Button onClick={openAdd}>Add Product</Button>}
+                    description="Add your first product to start selling"
+                    action={
+                        <Button onClick={() => setIsModalOpen(true)} size="md">
+                            <Plus size={14} className="mr-1.5" />
+                            Add Product
+                        </Button>
+                    }
                 />
             ) : (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div className="divide-y">
-                        {filtered.map((product) => {
-                            const cat = categories.find(
-                                (c) => c.id === product.categoryId,
-                            );
-
-                            return (
-                                <div
-                                    key={product.id}
-                                    className="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition"
-                                >
-                                    {/* LEFT */}
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100">
-                                            <img
-                                                src={product.image}
-                                                alt={product.name}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <p className="font-medium text-gray-800 text-sm">
-                                                {product.name}
-                                            </p>
-                                            <p className="text-xs text-gray-400">
-                                                {cat?.icon} {cat?.name}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {/* RIGHT */}
-                                    <div className="flex items-center gap-4">
-                                        <span className="font-semibold text-gray-900 text-sm">
-                                            {formatCurrency(product.price)}
-                                        </span>
-
-                                        <span
-                                            className={`text-xs font-medium ${
-                                                product.inStock
-                                                    ? "text-green-600"
-                                                    : "text-red-500"
-                                            }`}
-                                        >
-                                            {product.inStock
-                                                ? "In stock"
-                                                : "Out of stock"}
-                                        </span>
-
-                                        <Button
-                                            size="sm"
-                                            variant="outline"
-                                            onClick={() => openEdit(product)}
-                                        >
-                                            Edit
-                                        </Button>
-
-                                        <Button
-                                            size="sm"
-                                            variant="danger"
-                                            onClick={() =>
-                                                handleDelete(product)
-                                            }
-                                        >
-                                            Delete
-                                        </Button>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {products.map((product) => (
+                        <ProductCard
+                            key={product._id}
+                            product={product}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                            onToggleAvailability={handleToggleAvailability}
+                        />
+                    ))}
                 </div>
             )}
 
-            {/* MODAL */}
-            <Modal
-                open={modalOpen}
-                onClose={() => setModalOpen(false)}
-                title={editingProduct ? "Edit Product" : "Add Product"}
-            >
-                <div className="space-y-4">
-                    <InputField
-                        label="Product Name"
-                        required
-                        value={form.name}
-                        onChange={(e) =>
-                            setForm({ ...form, name: e.target.value })
-                        }
-                    />
-
-                    <TextareaField
-                        label="Description"
-                        value={form.description}
-                        onChange={(e) =>
-                            setForm({ ...form, description: e.target.value })
-                        }
-                    />
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <InputField
-                            label="Price (₹)"
-                            required
-                            type="number"
-                            value={form.price}
-                            onChange={(e) =>
-                                setForm({ ...form, price: e.target.value })
-                            }
-                        />
-
-                        <SelectField
-                            label="Category"
-                            required
-                            value={form.categoryId}
-                            onChange={(e) =>
-                                setForm({ ...form, categoryId: e.target.value })
-                            }
-                            options={categories.map((c) => ({
-                                label: `${c.icon} ${c.name}`,
-                                value: c.id,
-                            }))}
-                        />
-                    </div>
-
-                    <InputField
-                        label="Image URL"
-                        value={form.image}
-                        onChange={(e) =>
-                            setForm({ ...form, image: e.target.value })
-                        }
-                    />
-
-                    <div className="flex gap-6">
-                        <Toggle
-                            checked={form.inStock}
-                            onChange={(v) => setForm({ ...form, inStock: v })}
-                            label="In Stock"
-                        />
-
-                        <Toggle
-                            checked={form.isVeg}
-                            onChange={(v) => setForm({ ...form, isVeg: v })}
-                            label="Veg"
-                        />
-                    </div>
-
-                    <div className="flex gap-3 pt-2">
-                        <Button
-                            variant="outline"
-                            fullWidth
-                            onClick={() => setModalOpen(false)}
-                        >
-                            Cancel
-                        </Button>
-
-                        <Button
-                            fullWidth
-                            loading={submitting}
-                            onClick={handleSubmit}
-                        >
-                            {editingProduct ? "Update Product" : "Add Product"}
-                        </Button>
-                    </div>
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="flex items-center justify-end gap-2 pt-2">
+                    <button
+                        disabled={currentPage === 1}
+                        onClick={() => setCurrentPage((p) => p - 1)}
+                        className="px-3 py-1.5 text-xs rounded-xl border border-slate-200 disabled:opacity-40 cursor-pointer hover:bg-slate-50"
+                    >
+                        Previous
+                    </button>
+                    <button
+                        disabled={currentPage === totalPages}
+                        onClick={() => setCurrentPage((p) => p + 1)}
+                        className="px-3 py-1.5 text-xs rounded-xl border border-slate-200 disabled:opacity-40 cursor-pointer hover:bg-slate-50"
+                    >
+                        Next
+                    </button>
                 </div>
-            </Modal>
-        </>
+            )}
+
+            {/* Product form modal */}
+            {isModalOpen && (
+                <ProductFormModal
+                    shopId={activeShop._id}
+                    product={editingProduct}
+                    categories={categories}
+                    subCategories={subCategories}
+                    onClose={handleModalClose}
+                />
+            )}
+        </div>
     );
 };
 
-export default AdminProductsPage;
+
+export default ShopProductsPage;

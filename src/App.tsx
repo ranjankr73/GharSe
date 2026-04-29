@@ -1,112 +1,152 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router';
-import { Toaster } from 'react-hot-toast';
+import { useEffect } from "react";
 
-import { useAppDispatch } from './hooks/useAppDispatch';
-import { useAppSelector } from './hooks/useAppSelector';
-import { initializeAuth } from './features/auth/authThunks';
+import { useAppDispatch } from "./hooks/useAppDispatch";
+import { useAppSelector } from "./hooks/useAppSelector";
 
-// Pages
-import LandingPage from './pages/LandingPage';
-import ShopBrowsePage from './pages/customer/ShopBrowsePage';
-import SignupPage from './pages/auth/SignupPage';
-import LoginPage from './pages/auth/LoginPage';
+import { initializeAuth } from "./features/auth/authThunks";
+import { getMyShops } from "./features/shop/shopThunks";
 
-// Protected Route
-import ProtectedRoute from './components/layout/ProtectedRoute';
+import Spinner from "./components/ui/Spinner";
+import { BrowserRouter, Routes, Route } from "react-router";
+import LandingLayout from "./components/layout/LandingLayout";
+import CustomerLandingPage from "./pages/landing/CustomerLandingPage";
+import PartnerLandingPage from "./pages/landing/PartnerLandingPage";
+import DriverLandingPage from "./pages/landing/DriverLandingPage";
+import LoginSelectorPage from "./pages/auth/LoginSelectorPage";
+import LoginPage from "./pages/auth/LoginPage";
+import AdminLoginPage from "./pages/auth/AdminLoginPage";
+import RegisterSelectorPage from "./pages/auth/RegisterSelectorPage";
+import RegisterPage from "./pages/auth/RegisterPage";
+import ShopBrowsePage from "./pages/customer/ShopBrowsePage";
+import ProtectedRoute from "./components/layout/ProtectedRoute";
+import AdminDashboardLayout from "./components/layout/AdminDashboardLayout";
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
+import AdminShopsPage from "./pages/admin/AdminShopsPage";
+import AdminShopDetailPage from "./pages/admin/AdminShopDetailPage";
+import AdminOrdersPage from "./pages/admin/AdminOrdersPage";
+import AdminProductsPage from "./pages/admin/AdminProductsPage";
+import AdminCategoriesPage from "./pages/admin/AdminCategoriesPage";
+import ShopDashboardLayout from "./components/layout/ShopDashboardLayout";
+import ShopDashboardPage from "./pages/shop/ShopDashboardPage";
+import ShopOrdersPage from "./pages/shop/ShopOrdersPage";
+import ShopProductsPage from "./pages/shop/ShopProductsPage";
+import ShopCategoriesPage from "./pages/shop/ShopCategoriesPage";
+import ShopSettingsPage from "./pages/shop/ShopSettingsPage";
+import ShopCreatePage from "./pages/shop/ShopCreatePage";
+import ShopDetailPage from "./pages/customer/ShopDetailPage";
+import CartPage from "./pages/customer/CartPage";
+import CheckoutPage from "./pages/customer/CheckoutPage";
+import OrderSuccessPage from "./pages/customer/OrderSuccessPage";
+import OrderTrackingPage from "./pages/customer/OrderTrackingPage";
+import OrderHistoryPage from "./pages/customer/OrderHistoryPage";
+import CustomerDashboardLayout from "./components/layout/CustomerDashboardLayout";
 
-// Customer Pages
-// import ShopPage from './pages/customer/ShopPage';
-// import CartPage from './pages/customer/CartPage';
-// import CheckoutPage from './pages/customer/CheckoutPage';
-// import OrderTrackingPage from './pages/customer/OrderTrackingPage';
-// import OrderSuccessPage from './pages/customer/OrderSuccessPage';
-// import OrderHistoryPage from './pages/customer/OrderHistoryPage';
+const App = () => {
+    const dispatch = useAppDispatch();
+    const { isInitialized, isAuthenticated, user } = useAppSelector(
+        (s) => s.auth,
+    );
 
+    useEffect(() => {
+        dispatch(initializeAuth());
+    }, [dispatch]);
 
-// Shops Pages
-import ShopDashboardLayout from './components/layout/ShopDashboardLayout';
-import ShopDashboard from './pages/shop/ShopDashboardPage';
-import AdminSettingsPage from './pages/shop/ShopSettingsPage';
-// import ShopDashboard from './pages/shop/ShopDashboardPage';
-// import AdminOrdersPage from './pages/shop/ShopOrdersPage';
-// import AdminProductsPage from './pages/shop/ShopProductsPage';
-// import AdminCategoriesPage from './pages/shop/ShopCategoriesPage';
+    useEffect(() => {
+        if (isAuthenticated && user?.role === "shopOwner") {
+            dispatch(getMyShops());
+        }
+    }, [isAuthenticated, user, dispatch]);
 
-// ─── App ─────────────────────────────────────────────────────────────────
-const App: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const { isInitialized } = useAppSelector((state) => state.auth);
-
-  useEffect(() => {
-    dispatch(initializeAuth());
-  }, []);
-
-  if(!isInitialized){
-    return (
-      <div className="h-screen flex items-center justify-center">
-                <div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" />
+    if (!isInitialized) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-slate-50">
+                <Spinner size="lg" />
             </div>
-    )
-  };
+        );
+    }
 
-  return (
-    <BrowserRouter>
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          style: {
-            fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif',
-            fontWeight: 600,
-            fontSize: '13px',
-            borderRadius: '12px',
-            padding: '10px 16px',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-          },
-          success: {
-            style: { background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0' },
-            iconTheme: { primary: '#22c55e', secondary: '#fff' },
-          },
-          error: {
-            style: { background: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca' },
-            iconTheme: { primary: '#ef4444', secondary: '#fff' },
-          },
-        }}
-      />
-      <Routes>
-        {/* Public */}
-        <Route path="/" element={<LandingPage/>} index/>
-        <Route path="/customers/browse-shops" element={<ShopBrowsePage/>} />
+    return (
+        <BrowserRouter>
+            <Routes>
+                // Public Pages
+                <Route path="/" element={<LandingLayout />}>
+                    <Route index element={<CustomerLandingPage />} />
+                    <Route path="partner" element={<PartnerLandingPage />} />
+                    <Route path="driver" element={<DriverLandingPage />} />
+                </Route>
 
-        {/* Auth */}
-        <Route path="/shops/register" element={<SignupPage/>} />
-        <Route path="/customers/register" element={<SignupPage/>} />
-        <Route path="/shops/login" element={<LoginPage/>} />
-        <Route path="/customers/login" element={<LoginPage/>} />
+                // Auth Routes
+                <Route path="/login">
+                    <Route index element={<LoginSelectorPage />} />
+                    <Route path=":role" element={<LoginPage />} />
+                    <Route path="admin" element={<AdminLoginPage />} />
+                </Route>
+                <Route path="/register">
+                    <Route index element={<RegisterSelectorPage />} />
+                    <Route path=":role" element={<RegisterPage />} />
+                </Route>
 
-        {/* ─── Customer Routes ─────────────────────────── */}
-        {/* <Route path='/browse-shops' element={<ShopBrowsePage/>} />
-        <Route path="/shops/:shopId" element={<ShopPage />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/success" element={<OrderSuccessPage />} />
-        <Route path="/track/:orderId" element={<OrderTrackingPage />} />
-        <Route path="/orders" element={<OrderHistoryPage />} /> */}
+                // Customer Public Routes
+                <Route path="/browse-shops" element={<ShopBrowsePage />} />
+                <Route path="/shop/:shopId" element={<ShopDetailPage/>}/>
 
-          {/* ─── Shop Routes ────────────────────────────── */}
-          <Route path="/shops/dashboard" element={<ProtectedRoute><ShopDashboardLayout title='Dashboard'><ShopDashboard/></ShopDashboardLayout></ProtectedRoute>} />
-          <Route path="/shops/settings" element={<ProtectedRoute><ShopDashboardLayout title='Settings'><AdminSettingsPage /></ShopDashboardLayout></ProtectedRoute>} />
-          {/* <Route path="/shops/orders" element=  {<ProtectedRoute><ShopDashboardLayout title='Orders'><AdminOrdersPage /></ShopDashboardLayout></ProtectedRoute>} />
-        <Route path="/shops/products" element={<ProtectedRoute><ShopDashboardLayout title='Products'><AdminProductsPage /></ShopDashboardLayout></ProtectedRoute>} />
-        <Route path="/shops/categories" element={<ProtectedRoute><ShopDashboardLayout title='Categories'><AdminCategoriesPage /></ShopDashboardLayout></ProtectedRoute>} />
-         */}
+                // Protected Admin Routes
+                <Route
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={["admin"]}
+                            loginPath="/login/admin"
+                        />
+                    }
+                >
+                    <Route
+                        path="/admin/dashboard"
+                        element={<AdminDashboardLayout />}
+                    >
+                        <Route index element={<AdminDashboardPage />} />
+                        <Route path="shops" element={<AdminShopsPage />} />
+                        <Route
+                            path="shops/:shopId"
+                            element={<AdminShopDetailPage />}
+                        />
+                        <Route path="orders" element={<AdminOrdersPage />} />
+                        <Route
+                            path="products"
+                            element={<AdminProductsPage />}
+                        />
+                        <Route
+                            path="categories"
+                            element={<AdminCategoriesPage />}
+                        />
+                    </Route>
+                </Route>
 
+                // Protected Shop Owner Pages
+                <Route element={<ProtectedRoute allowedRoles={["shopOwner"]} loginPath="/login/partner"/>}>
+                    <Route path="/partner/dashboard" element={<ShopDashboardLayout/>}>
+                        <Route index element={<ShopDashboardPage/>} />
+                        <Route path="orders" element={<ShopOrdersPage/>}/>
+                        <Route path="products" element={<ShopProductsPage/>}/>
+                        <Route path="categories" element={<ShopCategoriesPage/>}/>
+                        <Route path="settings" element={<ShopSettingsPage/>}/>
+                        <Route path="create" element={<ShopCreatePage/>}/>
+                    </Route>
+                </Route>
 
-        {/* Fallback */}
-        {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
-      </Routes>
-    </BrowserRouter>
-  );
+                // Protected Customer Pages
+                <Route element={<ProtectedRoute allowedRoles={["customer"]} loginPath="/login/customer"/>}>
+                    <Route path="/user" element={<CustomerDashboardLayout/>}>
+                        <Route path="browse-shops" element={<ShopBrowsePage/>}/>
+                        <Route path="cart" element={<CartPage/>}/>
+                        <Route path="checkout" element={<CheckoutPage/>}/>
+                        <Route path="orders" element={<OrderHistoryPage/>}/>
+                    </Route>
+                    <Route path="/user/orders/:orderId/success" element={<OrderSuccessPage/>}/>
+                    <Route path="/user/orders/:orderId/track" element={<OrderTrackingPage/>}/>
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    );
 };
 
 export default App;

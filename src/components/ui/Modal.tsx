@@ -1,71 +1,49 @@
+import { X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+
 interface ModalProps {
-  open: boolean;
-  onClose: () => void;
-  title: string;
-  children: React.ReactNode;
+    isOpen: boolean;
+    onClose: () => void;
+    title: string;
+    children: React.ReactNode;
+    maxWidth?: string;
 }
 
-const Modal: React.FC<ModalProps> = ({
-  open,
-  onClose,
-  title,
-  children,
-}) => {
-  if (!open) return null;
+const Modal = ({ isOpen, onClose, title, children, maxWidth = "max-w-lg" }: ModalProps) => (
+    <AnimatePresence>
+        {isOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                {/* Backdrop */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={onClose}
+                    className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                />
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-      
-      {/* Overlay */}
-      <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
-        onClick={onClose}
-      />
-
-      {/* Modal */}
-      <div
-        className="
-          relative w-full sm:max-w-md
-          bg-white rounded-t-3xl sm:rounded-2xl
-          shadow-xl border border-gray-100
-          max-h-[90vh] overflow-y-auto
-          animate-modal-in
-        "
-      >
-        
-        {/* Drag Handle (mobile UX) */}
-        <div className="sm:hidden flex justify-center pt-3">
-          <div className="w-10 h-1.5 bg-gray-200 rounded-full" />
-        </div>
-
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          
-          <h2 className="text-base font-semibold text-gray-800 tracking-tight">
-            {title}
-          </h2>
-
-          <button
-            onClick={onClose}
-            className="
-              w-8 h-8 flex items-center justify-center
-              rounded-full
-              hover:bg-red-50 hover:text-red-500
-              text-gray-400
-              transition cursor-pointer
-            "
-          >
-            ✕
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="px-5 py-5">
-          {children}
-        </div>
-      </div>
-    </div>
-  );
-};
+                {/* Modal */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                    transition={{ duration: 0.2 }}
+                    className={`relative w-full ${maxWidth} bg-white rounded-2xl shadow-xl p-6`}
+                >
+                    <div className="flex items-center justify-between mb-5">
+                        <h2 className="text-sm font-semibold text-slate-800">{title}</h2>
+                        <button
+                            onClick={onClose}
+                            className="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 transition cursor-pointer"
+                        >
+                            <X size={15} />
+                        </button>
+                    </div>
+                    {children}
+                </motion.div>
+            </div>
+        )}
+    </AnimatePresence>
+);
 
 export default Modal;

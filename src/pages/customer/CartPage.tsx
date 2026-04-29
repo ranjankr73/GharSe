@@ -1,193 +1,176 @@
-import React from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useAppSelector, useAppDispatch } from "../../hooks";
-import {
-    selectCartItems,
-    selectCartTotal,
-    clearCart,
-} from "../../redux/slices/cartSlice";
-
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { getCart, clearCart } from "../../features/cart/cartThunks";
 import CartItem from "../../components/customer/CartItem";
-import CustomerNavbar from "../../components/layout/CustomerNavbar";
-import EmptyState from "../../components/ui/EmptyState";
 import Button from "../../components/ui/Button";
-
-import { formatCurrency } from "../../utils";
+import Spinner from "../../components/ui/Spinner";
+import EmptyState from "../../components/ui/EmptyState";
+import { formatCurrency } from "../../utils/formatCurrency";
+import { ArrowLeft, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 
-const CartPage: React.FC = () => {
-    const navigate = useNavigate();
+const CartPage = () => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const { cart, status } = useAppSelector((s) => s.cart);
+    const { isAuthenticated } = useAppSelector((s) => s.auth);
 
-    const items = useAppSelector(selectCartItems);
-    const total = useAppSelector(selectCartTotal);
-    const shop = useAppSelector((s) => s.shop.shop);
+    useEffect(() => {
+        if (isAuthenticated) dispatch(getCart());
+    }, [isAuthenticated, dispatch]);
 
-    const deliveryFee = shop?.deliveryFee ?? 20;
-    const minOrder = shop?.minOrder ?? 100;
-
-    const isMinMet = total >= minOrder;
-
-    const handleClear = () => {
-        dispatch(clearCart());
-        toast("Cart cleared");
+    const handleClear = async () => {
+        if (!confirm("Clear your cart?")) return;
+        await dispatch(clearCart());
+        toast.success("Cart cleared");
     };
 
-    // 🟡 EMPTY STATE
-    if (items.length === 0) {
+    const shop =
+        cart?.shop && typeof cart.shop === "object" ? cart.shop : null;
+    const subtotal = cart?.subtotal ?? 0;
+    const deliveryFee = shop?.deliveryFee ?? 0;
+    const platformFee = 5;
+    const total = subtotal + deliveryFee + platformFee;
+    const minOrder = shop?.minOrder ?? 0;
+    const belowMinOrder = minOrder > 0 && subtotal < minOrder;
+
+    if (status === "loading" && !cart) {
         return (
-            <div className="min-h-screen bg-gray-50 pb-32 md:pt-14">
-                {/* Header */}
-                <header
-                    className="
-  sticky top-0 md:top-14 z-20
-  bg-white border-b border-gray-100
-  px-4 lg:px-10 py-4
-  flex items-center gap-3
-"
-                >
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center cursor-pointer"
-                    >
-                        ←
-                    </button>
-
-                    <h1 className="text-lg font-semibold text-gray-800">
-                        Your Cart
-                    </h1>
-                </header>
-
-                <EmptyState
-                    icon="🛒"
-                    title="Your cart is empty"
-                    description="Add items from the shop to get started."
-                    action={
-                        <Button onClick={() => navigate("/browse-shops")}>
-                            Browse Shop
-                        </Button>
-                    }
-                />
-
-                <CustomerNavbar />
+            <div className="flex justify-center items-center min-h-screen">
+                <Spinner size="lg" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-32 md:pt-14">
-            {/* 🔥 HEADER */}
-            <header className="sticky top-0 lg:top-14 z-20 bg-white border-b border-gray-100 px-4 lg:px-10 py-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
+        <div className="min-h-screen bg-gray-50">
+            {/* Header */}
+            <div className="bg-white border-b border-gray-100 sticky top-0 z-30">
+                <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-3">
                     <button
                         onClick={() => navigate(-1)}
-                        className="w-9 h-9 rounded-xl bg-gray-100 text-center py-auto cursor-pointer"
+                        className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 cursor-pointer"
                     >
-                        ←
+                        <ArrowLeft size={16} />
                     </button>
-
-                    <h1 className="text-lg font-semibold text-gray-800">
+                    <h1 className="text-lg font-bold text-gray-900 flex-1">
                         Your Cart
                     </h1>
-                </div>
-
-                <button
-                    onClick={handleClear}
-                    className="text-xs lg:text-base font-medium text-red-500 hover:text-red-600 cursor-pointer"
-                >
-                    Clear
-                </button>
-            </header>
-
-            {/* 📦 CONTENT */}
-            <div className="max-w-2xl mx-auto px-4 mt-4 space-y-3">
-                {/* Items */}
-                {items.map((item) => (
-                    <CartItem key={item.product.id} item={item} />
-                ))}
-
-                {/* 💰 BILL SUMMARY */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mt-4">
-                    <h3 className="text-sm font-medium text-gray-800 mb-3">
-                        Bill Summary
-                    </h3>
-
-                    <div className="space-y-2 text-sm">
-                        <div className="flex justify-between text-gray-600">
-                            <span>
-                                Subtotal ({items.length} item
-                                {items.length > 1 ? "s" : ""})
-                            </span>
-                            <span className="font-medium text-gray-800">
-                                {formatCurrency(total)}
-                            </span>
-                        </div>
-
-                        <div className="flex justify-between text-gray-600">
-                            <span>Delivery fee</span>
-                            <span className="font-medium text-gray-800">
-                                {formatCurrency(deliveryFee)}
-                            </span>
-                        </div>
-
-                        <div className="border-t border-dashed border-gray-200 pt-2 flex justify-between">
-                            <span className="font-semibold text-gray-900">
-                                Total
-                            </span>
-                            <span className="text-lg font-bold text-gray-900">
-                                {formatCurrency(total + deliveryFee)}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* ⚠️ MIN ORDER */}
-                {!isMinMet && (
-                    <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex gap-3">
-                        <span className="text-red-500 text-lg">⚠️</span>
-
-                        <div>
-                            <p className="text-sm font-medium text-red-700">
-                                Minimum order not met
-                            </p>
-
-                            <p className="text-xs text-red-500 mt-0.5">
-                                Add {formatCurrency(minOrder - total)} more to
-                                proceed.
-                            </p>
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* 🚀 CHECKOUT BAR */}
-            <div
-                className="
-        fixed bottom-16 md:bottom-4 left-0 right-0 z-30
-        px-4 pb-3
-      "
-            >
-                <div className="max-w-2xl mx-auto">
-                    <Button
-                        onClick={() => navigate("/checkout")}
-                        size="lg"
-                        fullWidth
-                        disabled={!isMinMet}
-                    >
-                        Proceed to Checkout •{" "}
-                        {formatCurrency(total + deliveryFee)}
-                    </Button>
-
-                    {isMinMet && (
-                        <p className="text-center text-xs text-gray-400 mt-2">
-                            Delivery in {shop?.deliveryTime ?? "30–45 min"}
-                        </p>
+                    {cart && cart.items.length > 0 && (
+                        <button
+                            onClick={handleClear}
+                            className="p-2 text-red-400 hover:text-red-600 cursor-pointer"
+                        >
+                            <Trash2 size={16} />
+                        </button>
                     )}
                 </div>
             </div>
 
-            {/* 📱 NAVBAR */}
-            <CustomerNavbar />
+            <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
+                {!cart || cart.items.length === 0 ? (
+                    <EmptyState
+                        icon="🛒"
+                        title="Your cart is empty"
+                        description="Add items from a shop to get started"
+                        action={
+                            <Button
+                                onClick={() => navigate("/user/browse-shops")}
+                            >
+                                Browse Shops
+                            </Button>
+                        }
+                    />
+                ) : (
+                    <>
+                        {/* Shop info */}
+                        {shop && (
+                            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
+                                {shop.logo && (
+                                    <img
+                                        src={shop.logo}
+                                        alt={shop.name}
+                                        className="w-10 h-10 rounded-xl object-cover"
+                                    />
+                                )}
+                                <div>
+                                    <p className="text-sm font-semibold text-gray-800">
+                                        {shop.name}
+                                    </p>
+                                    <p className="text-xs text-gray-400">
+                                        {cart.items.length} items
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Cart items */}
+                        <div className="space-y-3">
+                            {cart.items.map((item) => (
+                                <CartItem key={item._id} item={item} />
+                            ))}
+                        </div>
+
+                        {/* Min order warning */}
+                        {belowMinOrder && (
+                            <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-3 text-xs text-yellow-700">
+                                Add ₹{minOrder - subtotal} more to meet the minimum order of ₹{minOrder}
+                            </div>
+                        )}
+
+                        {/* Bill summary */}
+                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-3">
+                            <h3 className="text-sm font-semibold text-gray-800">
+                                Bill Summary
+                            </h3>
+                            <div className="space-y-2 text-sm text-gray-600">
+                                <div className="flex justify-between">
+                                    <span>Subtotal</span>
+                                    <span>{formatCurrency(subtotal)}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Delivery fee</span>
+                                    <span>
+                                        {deliveryFee === 0
+                                            ? "Free"
+                                            : formatCurrency(deliveryFee)}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Platform fee</span>
+                                    <span>{formatCurrency(platformFee)}</span>
+                                </div>
+                                <div className="flex justify-between font-semibold text-gray-900 border-t border-gray-100 pt-2">
+                                    <span>Total</span>
+                                    <span>{formatCurrency(total)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Checkout button */}
+                        <Button
+                            fullWidth
+                            size="lg"
+                            disabled={belowMinOrder || !shop?.isOpen}
+                            onClick={() => {
+                                if (!isAuthenticated) {
+                                    navigate("/login/customer");
+                                    return;
+                                }
+                                navigate("/user/checkout");
+                            }}
+                        >
+                            {!shop?.isOpen
+                                ? "Shop is closed"
+                                : belowMinOrder
+                                ? `Min order ₹${minOrder}`
+                                : `Proceed to Checkout • ${formatCurrency(total)}`}
+                        </Button>
+                    </>
+                )}
+            </div>
         </div>
     );
 };

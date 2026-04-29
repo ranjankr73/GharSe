@@ -1,165 +1,151 @@
-import React, { useState } from "react";
-import { Link, NavLink, useLocation, useNavigate } from "react-router";
-import { useAppDispatch, useAppSelector } from "../../hooks";
-import { logout } from "../../redux/slices/authSlice";
-import Logo from "../ui/Logo";
-import Button from "../ui/Button";
+import { Outlet, useNavigate, NavLink } from "react-router";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { logoutUser } from "../../features/auth/authThunks";
+import toast from "react-hot-toast";
+import { setActiveShop } from "../../features/shop/shopSlice";
+import { ChevronDown, LayoutDashboard, ShoppingBag, Package, Tag, Settings, Store, LogOut } from "lucide-react";
 
-const ADMIN_NAV = [
-  { to: "/shops/dashboard", icon: "📊", label: "Dashboard" },
-  { to: "/shops/orders", icon: "📦", label: "Orders" },
-  { to: "/shops/products", icon: "🛍️", label: "Products" },
-  { to: "/shops/categories", icon: "📂", label: "Categories" },
-  { to: "/shops/settings", icon: "⚙️", label: "Settings" },
+const navItems = [
+    { label: "Dashboard", icon: LayoutDashboard, to: "." },
+    { label: "Orders", icon: ShoppingBag, to: "orders" },
+    { label: "Products", icon: Package, to: "products" },
+    { label: "Categories", icon: Tag, to: "categories" },
+    { label: "Settings", icon: Settings, to: "settings" },
 ];
 
-interface Props {
-  children: React.ReactNode;
-  title: string;
-}
+const ShopDashboardLayout = () => {
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const { user } = useAppSelector((s) => s.auth);
+    const { shops, activeShop } = useAppSelector((s) => s.shop);
 
-const ShopDashboardLayout: React.FC<Props> = ({ children, title }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+    const handleLogout = async () => {
+        await dispatch(logoutUser());
+        navigate("/login/partner");
+        toast.success("Logged out");
+    };
 
-  const location = useLocation();
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const shop = useAppSelector((s) => s.auth.admin);
+    const handleShopSwitch = (shopId: string) => {
+        const shop = shops.find((s) => s._id === shopId);
+        if (shop) dispatch(setActiveShop(shop));
+    };
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/shops/login");
-  };
-
-  return (
-    <div className="min-h-screen flex bg-gray-50">
-      
-      {/* OVERLAY */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* SIDEBAR */}
-      <aside
-        className={`
-          fixed top-0 left-0 h-full w-64 z-50
-          bg-white border-r border-gray-100 shadow-sm
-          flex flex-col
-          transform transition-transform duration-300
-          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-          lg:translate-x-0
-        `}
-      >
-        {/* HEADER */}
-        <div className="p-6 border-b border-gray-100 flex flex-col items-start gap-5">
-          <Link to="/">
-            <Logo size="sm" />
-          </Link>
-
-          <h2 className="text-lg font-bold tracking-tight mt-5">
-              Shop Dashboard
-          </h2> 
-        </div>
-
-        {/* NAV */}
-        <nav className="flex-1 p-3 space-y-1">
-          {ADMIN_NAV.map((item) => {
-            const isActive = location.pathname === item.to;
-
-            return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                onClick={() => setSidebarOpen(false)}
-                className={`
-                  flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium
-                  transition-all relative
-                  ${
-                    isActive
-                      ? "bg-red-50 text-red-600"
-                      : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
-                  }
-                `}
-              >
-                <span className="text-base">{item.icon}</span>
-                {item.label}
-
-                {/* Active indicator */}
-                {isActive && (
-                  <span className="absolute left-0 top-0 h-full w-1 bg-red-500 rounded-r-full" />
-                )}
-              </NavLink>
-            );
-          })}
-        </nav>
-
-        {/* USER */}
-        <div className="p-4 border-t border-gray-100">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-9 h-9 bg-red-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-              {shop?.name?.[0] || "S"}
+    return (
+        <div className="flex min-h-screen bg-slate-50">
+            <aside className="w-60 min-h-screen bg-white border-r border-slate-100 flex flex-col">
+            {/* Logo */}
+            <div className="px-5 py-5 border-b border-slate-100">
+                <span className="text-lg font-bold">
+                    <span className="text-slate-800">Ghar</span>
+                    <span className="text-red-500">Se</span>
+                </span>
+                <p className="text-xs text-slate-400 mt-0.5">Shop Dashboard</p>
             </div>
 
-            <div className="min-w-0">
-              <p className="text-sm font-medium text-gray-800 truncate">
-                {shop?.name || "Shop"}
-              </p>
-              <p className="text-xs text-gray-400 truncate">
-                {shop?.email}
-              </p>
+            {/* Shop Switcher */}
+            {shops.length > 0 && (
+                <div className="px-4 py-3 border-b border-slate-100">
+                    <p className="text-xs text-slate-400 mb-1.5 font-medium">Active Shop</p>
+                    <div className="relative">
+                        <select
+                            value={activeShop?._id ?? ""}
+                            onChange={(e) => handleShopSwitch(e.target.value)}
+                            className="w-full text-xs font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 pr-8 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500/20"
+                        >
+                            {shops.map((shop) => (
+                                <option key={shop._id} value={shop._id}>
+                                    {shop.name}
+                                </option>
+                            ))}
+                        </select>
+                        <ChevronDown
+                            size={12}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                        />
+                    </div>
+
+                    {/* Open/Closed badge */}
+                    {activeShop && (
+                        <div className="mt-2 flex items-center gap-1.5">
+                            <div
+                                className={`w-1.5 h-1.5 rounded-full ${
+                                    activeShop.isOpen ? "bg-green-500" : "bg-slate-300"
+                                }`}
+                            />
+                            <span className="text-xs text-slate-500">
+                                {activeShop.isOpen ? "Open" : "Closed"}
+                            </span>
+                            {!activeShop.isVerified && (
+                                <span className="ml-auto text-xs bg-yellow-50 text-yellow-600 px-2 py-0.5 rounded-full border border-yellow-100">
+                                    Pending verification
+                                </span>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Nav */}
+            <nav className="flex-1 px-3 py-4 space-y-1">
+                {navItems.map(({ label, icon: Icon, to }) => (
+                    <NavLink
+                        key={to}
+                        to={to}
+                        end={to === "."}
+                        className={({ isActive }) =>
+                            `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                                isActive
+                                    ? "bg-red-50 text-red-600"
+                                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-800"
+                            }`
+                        }
+                    >
+                        <Icon size={16} />
+                        {label}
+                    </NavLink>
+                ))}
+
+                {/* Add new shop */}
+                <NavLink
+                    to="create"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all"
+                >
+                    <Store size={16} />
+                    Add New Shop
+                </NavLink>
+            </nav>
+
+            {/* User */}
+            <div className="px-4 py-4 border-t border-slate-100">
+                <div className="flex items-center gap-3 mb-3">
+                    <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-xs font-semibold text-red-600">
+                        {user?.fullName?.[0]?.toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                        <p className="text-xs font-semibold text-slate-700 truncate">
+                            {user?.fullName}
+                        </p>
+                        <p className="text-xs text-slate-400 truncate">{user?.email}</p>
+                    </div>
+                </div>
+                <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 text-xs text-slate-500 hover:text-red-500 transition cursor-pointer w-full"
+                >
+                    <LogOut size={13} />
+                    Logout
+                </button>
             </div>
-          </div>
+        </aside>
 
-          <Button
-            onClick={handleLogout}
-            size="md"
-            variant="danger"
-            className="
-              text-gray-500 hover:text-white-500 hover:bg-red-50
-              transition w-full
-            "
-          >
-            🚪 Logout
-          </Button>
+            <main className="flex-1 overflow-auto">
+                <div className="max-w-6xl mx-auto px-6 py-8">
+                    <Outlet />
+                </div>
+            </main>
         </div>
-      </aside>
-
-      {/* MAIN */}
-      <div className="flex-1 lg:ml-64 flex flex-col">
-        
-        {/* TOPBAR */}
-        <header className="bg-white border-b border-gray-100 px-4 lg:px-8 py-4 flex items-center justify-between sticky top-0 z-20">
-          
-          {/* LEFT */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-100 cursor-pointer"
-            >
-              ☰
-            </button>
-
-            <h1 className="text-lg font-semibold text-gray-800">
-              {title}
-            </h1>
-          </div>
-
-          {/* RIGHT */}
-          <div className="hidden sm:flex items-center gap-2 text-sm text-gray-500">
-            🍔 <span className="font-medium">{shop?.name || "Shop"}</span>
-          </div>
-        </header>
-
-        {/* CONTENT */}
-        <main className="flex-1 p-4 lg:p-8">
-          {children}
-        </main>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default ShopDashboardLayout;

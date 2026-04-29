@@ -1,221 +1,240 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router";
-
-import { useAppDispatch, useAppSelector } from "../../hooks";
-import { fetchOrders } from "../../redux/slices/orderSlice";
-
-import StatusBadge from "../../components/ui/StatusBadge";
-import StatCard from "../../components/ui/StatCard";
+import { useEffect, useState } from "react";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { getShopStats, getShopOrders } from "../../features/order/orderThunks";
+import { toggleShopStatus } from "../../features/shop/shopThunks";
+import { updateOrderStatus } from "../../features/order/orderThunks";
+import type { OrderStatus } from "../../features/order/orderTypes";
+import OrderCard from "../../components/shop/OrderCard";
+import Spinner from "../../components/ui/Spinner";
 import EmptyState from "../../components/ui/EmptyState";
-import Skeleton from "../../components/ui/Skeleton";
-import Button from "../../components/ui/Button";
-
+import toast from "react-hot-toast";
 import {
-  formatCurrency,
-  formatTimeAgo,
-  ORDER_STATUS_CONFIG,
-} from "../../utils";
+    TrendingUp,
+    ShoppingBag,
+    IndianRupee,
+    Clock,
+    ToggleLeft,
+    ToggleRight,
+} from "lucide-react";
 
-const ShopDashboard: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+const STAT_PERIODS = ["today", "week", "month"] as const;
 
-  const { orders, loading } = useAppSelector((s) => s.orders);
-  const shop = useAppSelector((s) => s.shop.shop);
+const ShopDashboardPage = () => {
+    const dispatch = useAppDispatch();
+    const { activeShop } = useAppSelector((s) => s.shop);
+    const { stats, orders, status } = useAppSelector((s) => s.order);
+    const [period, setPeriod] = useState<"today" | "week" | "month">("today");
 
-  useEffect(() => {
-    dispatch(fetchOrders("shop-001"));
-  }, [dispatch]);
+    useEffect(() => {
+        if (!activeShop) return;
+        dispatch(getShopStats({ shopId: activeShop._id, period }));
+        dispatch(getShopOrders({
+            shopId: activeShop._id,
+            params: { status: "PENDING", limit: 5 },
+        }));
+    }, [activeShop, period, dispatch]);
 
-  const totalRevenue = orders
-    .filter((o) => o.status === "delivered")
-    .reduce((sum, o) => sum + o.totalAmount + o.deliveryFee, 0);
+    const handleToggleStatus = async () => {
+        if (!activeShop) return;
+        if (!activeShop.isVerified) {
+            toast.error("Shop must be verified before going live");
+            return;
+        }
+        const result = await dispatch(toggleShopStatus(activeShop._id));
+        if (toggleShopStatus.fulfilled.match(result)) {
+            toast.success(result.payload.isOpen ? "Shop is now Open 🟢" : "Shop is now Closed 🔴");
+        }
+    };
 
-  const pendingCount = orders.filter((o) => o.status === "pending").length;
+    const handleStatusUpdate = async (
+        orderId: string,
+        newStatus: OrderStatus
+    ) => {
+        if (!activeShop) return;
+        const result = await dispatch(
+            updateOrderStatus({ shopId: activeShop._id, orderId, status: newStatus })
+        );
+        if (updateOrderStatus.fulfilled.match(result)) {
+            toast.success(`Order ${newStatus.toLowerCase()}`);
+        } else {
+            toast.error("Failed to update order");
+        }
+    };
 
-  const todayOrders = orders.filter((o) => {
-    const d = new Date(o.createdAt);
-    const today = new Date();
-    return d.toDateString() === today.toDateString();
-  }).length;
-
-  const recentOrders = [...orders].slice(0, 5);
-
-  const statusDistribution = Object.entries(
-    orders.reduce<Record<string, number>>((acc, o) => {
-      acc[o.status] = (acc[o.status] || 0) + 1;
-      return acc;
-    }, {})
-  );
-
-  return (
-    <div className="space-y-6">
-
-      {/* 🔥 HERO */}
-      <div className="bg-linear-to-r from-red-500 to-red-600 rounded-3xl p-6 text-white shadow-sm">
-        <div className="flex items-center justify-between">
-          
-          <div>
-            <p className="text-red-100 text-sm font-medium">
-              Welcome back 👋
-            </p>
-
-            <h2 className="text-2xl lg:text-3xl font-semibold mt-1 tracking-tight">
-              {shop?.name ?? "Fresh Basket"}
-            </h2>
-
-            <div className="flex items-center gap-2 mt-3">
-              <span
-                className={`w-2.5 h-2.5 rounded-full ${
-                  shop?.isOpen
-                    ? "bg-green-300 animate-pulse"
-                    : "bg-red-300"
-                }`}
-              />
-              <span className="text-sm text-red-100">
-                {shop?.isOpen
-                  ? "Open • Accepting orders"
-                  : "Closed"}
-              </span>
-            </div>
-          </div>
-
-          <div className="text-5xl opacity-80">🍔</div>
-        </div>
-      </div>
-
-      {/* 📊 STATS */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Orders" value={String(orders.length)} icon="📦" />
-        <StatCard
-          label="Revenue"
-          value={formatCurrency(totalRevenue)}
-          icon="💰"
-          variant="success"
-        />
-        <StatCard
-          label="Pending"
-          value={String(pendingCount)}
-          icon="⏳"
-          variant="warning"
-        />
-        <StatCard label="Today" value={String(todayOrders)} icon="📅" />
-      </div>
-
-      {/* MAIN GRID */}
-      <div className="grid lg:grid-cols-3 gap-6">
-
-        {/* 🧾 RECENT ORDERS */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm">
-          
-          <div className="flex items-center justify-between px-5 py-4 border-b">
-            <h3 className="font-semibold text-gray-800">
-              Recent Orders
-            </h3>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/admin/orders")}
-            >
-              View all →
-            </Button>
-          </div>
-
-          {loading ? (
-            <div className="p-5 space-y-3">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className="h-14 w-full" />
-              ))}
-            </div>
-          ) : recentOrders.length === 0 ? (
+    if (!activeShop) {
+        return (
             <EmptyState
-              icon="📭"
-              title="No orders yet"
-              description="Orders will appear here once customers start ordering."
+                icon="🏪"
+                title="No shop found"
+                description="Create your first shop to get started"
             />
-          ) : (
-            <div className="divide-y">
-              {recentOrders.map((order) => (
-                <div
-                  key={order.id}
-                  onClick={() => navigate("/admin/orders")}
-                  className="flex items-center justify-between px-5 py-4 hover:bg-gray-50 cursor-pointer transition"
-                >
-                  <div>
-                    <p className="font-medium text-gray-800 text-sm">
-                      {order.customerName}
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      #{order.id} • {formatTimeAgo(order.createdAt)}
-                    </p>
-                  </div>
+        );
+    }
 
-                  <div className="flex items-center gap-3">
-                    <span className="font-semibold text-gray-900 text-sm">
-                      {formatCurrency(order.totalAmount + order.deliveryFee)}
-                    </span>
-
-                    <StatusBadge status={order.status} size="sm" />
-                  </div>
+    return (
+        <div className="space-y-6">
+            {/* Shop status toggle */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h2 className="text-sm font-semibold text-slate-800">
+                            {activeShop.name}
+                        </h2>
+                        <p className="text-xs text-slate-400 mt-0.5">
+                            {activeShop.isVerified
+                                ? "Verified shop"
+                                : "Pending admin verification"}
+                        </p>
+                    </div>
+                    <button
+                        onClick={handleToggleStatus}
+                        className="flex items-center gap-2 cursor-pointer"
+                    >
+                        {activeShop.isOpen ? (
+                            <ToggleRight size={32} className="text-green-500" />
+                        ) : (
+                            <ToggleLeft size={32} className="text-slate-300" />
+                        )}
+                        <span
+                            className={`text-sm font-medium ${
+                                activeShop.isOpen ? "text-green-600" : "text-slate-400"
+                            }`}
+                        >
+                            {activeShop.isOpen ? "Open" : "Closed"}
+                        </span>
+                    </button>
                 </div>
-              ))}
             </div>
-          )}
-        </div>
 
-        {/* 📈 STATUS */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          
-          <h3 className="font-semibold text-gray-800 mb-4">
-            Order Status
-          </h3>
-
-          {statusDistribution.length === 0 ? (
-            <EmptyState
-              icon="📊"
-              title="No data yet"
-              description="Order stats will appear here."
-            />
-          ) : (
-            <div className="space-y-4">
-              {statusDistribution.map(([status, count]) => {
-                const cfg =
-                  ORDER_STATUS_CONFIG[
-                    status as keyof typeof ORDER_STATUS_CONFIG
-                  ];
-
-                const pct = orders.length
-                  ? Math.round((count / orders.length) * 100)
-                  : 0;
-
-                return (
-                  <div key={status}>
-                    
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="text-gray-600 font-medium">
-                        {cfg?.label}
-                      </span>
-                      <span className="text-gray-800 font-semibold">
-                        {count}
-                      </span>
-                    </div>
-
-                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-red-500 rounded-full transition-all duration-500"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
+            {/* Period selector */}
+            <div className="flex gap-2">
+                {STAT_PERIODS.map((p) => (
+                    <button
+                        key={p}
+                        onClick={() => setPeriod(p)}
+                        className={`px-4 py-1.5 rounded-full text-xs font-medium capitalize transition cursor-pointer ${
+                            period === p
+                                ? "bg-red-500 text-white"
+                                : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+                        }`}
+                    >
+                        {p}
+                    </button>
+                ))}
             </div>
-          )}
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                    {
+                        label: "Total Orders",
+                        value: stats?.totalOrders ?? 0,
+                        icon: ShoppingBag,
+                        color: "text-blue-500",
+                        bg: "bg-blue-50",
+                    },
+                    {
+                        label: "Revenue",
+                        value: `₹${stats?.totalRevenue ?? 0}`,
+                        icon: IndianRupee,
+                        color: "text-green-500",
+                        bg: "bg-green-50",
+                    },
+                    {
+                        label: "Avg. Order",
+                        value: `₹${stats?.avgOrderValue ?? 0}`,
+                        icon: TrendingUp,
+                        color: "text-purple-500",
+                        bg: "bg-purple-50",
+                    },
+                    {
+                        label: "Pending",
+                        value: stats?.activeOrders?.PENDING ?? 0,
+                        icon: Clock,
+                        color: "text-orange-500",
+                        bg: "bg-orange-50",
+                    },
+                ].map(({ label, value, icon: Icon, color, bg }) => (
+                    <div
+                        key={label}
+                        className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5"
+                    >
+                        <div
+                            className={`w-9 h-9 ${bg} rounded-xl flex items-center justify-center mb-3`}
+                        >
+                            <Icon size={16} className={color} />
+                        </div>
+                        <p className="text-xs text-slate-400">{label}</p>
+                        <p className="text-lg font-bold text-slate-800 mt-0.5">
+                            {value}
+                        </p>
+                    </div>
+                ))}
+            </div>
+
+            {/* Active order breakdown */}
+            {stats && (
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+                    <h3 className="text-sm font-semibold text-slate-800 mb-4">
+                        Active Orders
+                    </h3>
+                    <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+                        {(
+                            [
+                                "PENDING",
+                                "CONFIRMED",
+                                "PREPARING",
+                                "READY",
+                                "PICKED_UP",
+                                "OUT_FOR_DELIVERY",
+                            ] as const
+                        ).map((s) => (
+                            <div
+                                key={s}
+                                className="text-center bg-slate-50 rounded-xl p-3"
+                            >
+                                <p className="text-lg font-bold text-slate-800">
+                                    {stats.activeOrders[s] ?? 0}
+                                </p>
+                                <p className="text-xs text-slate-400 mt-0.5 capitalize">
+                                    {s.replace(/_/g, " ").toLowerCase()}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Pending orders */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+                <h3 className="text-sm font-semibold text-slate-800 mb-4">
+                    Pending Orders
+                </h3>
+                {status === "loading" ? (
+                    <div className="flex justify-center py-8">
+                        <Spinner />
+                    </div>
+                ) : orders.length === 0 ? (
+                    <EmptyState
+                        icon="🎉"
+                        title="No pending orders"
+                        description="All caught up!"
+                    />
+                ) : (
+                    <div className="space-y-3">
+                        {orders.map((order) => (
+                            <OrderCard
+                                key={order._id}
+                                order={order}
+                                onStatusUpdate={handleStatusUpdate}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
-export default ShopDashboard;
+export default ShopDashboardPage;

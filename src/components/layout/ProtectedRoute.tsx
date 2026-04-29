@@ -1,24 +1,48 @@
-import React from "react";
-import { Navigate, useLocation } from "react-router";
+import { Navigate, Outlet, useLocation } from "react-router";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import Spinner from "../ui/Spinner";
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
-    children,
-}) => {
-    const { isAuthenticated, status } = useAppSelector((state) => state.auth);
+interface Props {
+    allowedRoles?: string[];
+    loginPath?: string;
+}
+
+const ProtectedRoute = ({ allowedRoles, loginPath = "/login" }: Props) => {
+    const { isAuthenticated, isInitialized, user } = useAppSelector(
+        (s) => s.auth,
+    );
+    
     const location = useLocation();
 
-    const role = location.pathname.split("/")[1];
-
-    if(status === "loading" || status === "idle"){
-        return <>Loading...</>
+    if (!isInitialized) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <Spinner size="lg" />
+            </div>
+        );
     }
 
-    if(!isAuthenticated){
-        return <Navigate to={`/${role}/login`} replace/>;
+
+    if (!isAuthenticated) {
+        return <Navigate to={loginPath} state={{ from: location }} replace/>;
     }
 
-    return children;
+    if (allowedRoles && user && !allowedRoles.includes(user.role)) {
+        const redirectPath =
+            user?.role === "admin"
+                ? "/admin/dashboard"
+                : user?.role === "shopOwner"
+                  ? "/shops/dashboard"
+                  : user?.role === "deliveryAgent"
+                    ? "/driver/dashboard"
+                    : "/";
+
+        return (
+            <Navigate to={redirectPath} replace />
+        );
+    }
+
+    return <Outlet/>;
 };
 
 export default ProtectedRoute;
