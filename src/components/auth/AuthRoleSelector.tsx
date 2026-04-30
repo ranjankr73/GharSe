@@ -43,7 +43,7 @@ const AuthRoleSelector = () => {
                 {roles.map((role) => (
                     <button
                         key={role.path}
-                        onClick={() => navigate(`${role.path}`)}
+                        onClick={() => navigate(role.path, { replace: true })}
                         className="w-full text-left border border-gray-100 rounded-2xl p-5 hover:border-red-200 hover:bg-red-50 transition cursor-pointer"
                     >
                         <div className="flex items-center gap-4">

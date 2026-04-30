@@ -56,23 +56,23 @@ const AuthForm = () => {
             if(data){
                 switch(data.user.role as UserRole){
                     case "admin":
-                        navigate("/admin/dashboard");
+                        navigate("/admin/dashboard", { replace: true });
                         break;
                     
                     case "partner":
-                        navigate("/partner/dashboard");
+                        navigate("/partner/dashboard", { replace: true });
                         break;
 
                     case "rider":
-                        navigate("/rider/dashboard");
+                        navigate("/rider/dashboard", { replace: true });
                         break;
                     
                     case "customer":
-                        navigate("/customer/browse-shops");
+                        navigate("/customer/browse-shops", { replace: true });
                         break;
                     
                     default:
-                        navigate("/");
+                        navigate("/", { replace: true });
                 }
             }
         } catch (error: any) {
@@ -122,9 +122,13 @@ const AuthForm = () => {
 
             <p className="text-sm text-center">
                 {location.pathname.includes("login") ? (
-                    <Link to={`/register/${role}`}>Create account</Link>
+                    <Link to={`/register/${role}`} replace>
+                        Create account
+                    </Link>
                 ) : (
-                    <Link to={`/login/${role}`}>Already have an account?</Link>
+                    <Link to={`/login/${role}`} replace>
+                        Already have an account?
+                    </Link>
                 )}
             </p>
         </div>

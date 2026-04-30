@@ -1,26 +1,31 @@
-import { Link, useLocation, useParams, Outlet, useNavigate } from "react-router";
+import {
+    Link,
+    useLocation,
+    useParams,
+    Outlet,
+    useNavigate,
+} from "react-router";
 import Logo from "../ui/Logo";
+import { useEffect } from "react";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import type { UserRole } from "../../features/auth/authTypes";
 
 const roleContent = {
     customer: {
         title: "Order from trusted local shops",
-        subtitle:
-            "Fast ordering, live tracking, and seamless local shopping.",
+        subtitle: "Fast ordering, live tracking, and seamless local shopping.",
     },
     partner: {
         title: "Grow your shop online",
-        subtitle:
-            "Accept orders, manage products, and reach nearby customers.",
+        subtitle: "Accept orders, manage products, and reach nearby customers.",
     },
     rider: {
         title: "Deliver and earn flexibly",
-        subtitle:
-            "Work on your schedule and earn with every delivery.",
+        subtitle: "Work on your schedule and earn with every delivery.",
     },
     admin: {
         title: "Platform management",
-        subtitle:
-            "Manage platform operations and monitor activities.",
+        subtitle: "Manage platform operations and monitor activities.",
     },
 };
 
@@ -28,15 +33,55 @@ const AuthLayout = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { role } = useParams();
+    const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+
+    useEffect(() => {
+        if(role && !(role in roleContent)){
+            if(location.pathname.includes("/login/")){
+                navigate("/login", { replace: true });
+            }
+            if(location.pathname.includes("/register/")){
+                navigate("/register", { replace: true });
+            }
+        }
+    }, [role, location.pathname, navigate]);
+
+    useEffect(() => {
+        if(isAuthenticated){
+            switch(user?.role as UserRole){
+                case "customer":
+                    navigate("/customer/browse-shops", { replace: true });
+                    break;
+                case "partner":
+                    navigate("/partner/dashboard", { replace: true });
+                    break;
+                case "rider":
+                    navigate("/rider/dashboard", { replace: true });
+                    break;
+                case "admin":
+                    navigate("/admin/dashboard", { replace: true });
+                    break;
+                default:
+                    navigate("/", { replace: true });
+            }
+        }
+    }, [isAuthenticated, user, navigate]);
 
     const isSelectorPage =
-        location.pathname === "/login" ||
-        location.pathname === "/register";
+        location.pathname === "/login" || location.pathname === "/register";
 
     const content =
         role && role in roleContent
             ? roleContent[role as keyof typeof roleContent]
             : null;
+
+    const handleBack = () => {
+        if (location.pathname.includes("/login/"))
+            navigate("/login", { replace: true });
+        else if (location.pathname.includes("/register/"))
+            navigate("/register", { replace: true });
+        else navigate("/", { replace: true });
+    };
 
     return (
         <div className="min-h-screen bg-linear-to-br from-red-50 via-white to-white">
@@ -48,7 +93,7 @@ const AuthLayout = () => {
                     </Link>
 
                     <button
-                        onClick={() => navigate(-1)}
+                        onClick={handleBack}
                         className="text-sm text-gray-500 hover:text-red-500 transition cursor-pointer"
                     >
                         Back
