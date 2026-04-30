@@ -12,11 +12,7 @@ import LandingLayout from "./components/layout/LandingLayout";
 import CustomerLandingPage from "./pages/landing/CustomerLandingPage";
 import PartnerLandingPage from "./pages/landing/PartnerLandingPage";
 import DriverLandingPage from "./pages/landing/DriverLandingPage";
-import LoginSelectorPage from "./pages/auth/LoginSelectorPage";
-import LoginPage from "./pages/auth/LoginPage";
 import AdminLoginPage from "./pages/auth/AdminLoginPage";
-import RegisterSelectorPage from "./pages/auth/RegisterSelectorPage";
-import RegisterPage from "./pages/auth/RegisterPage";
 import ShopBrowsePage from "./pages/customer/ShopBrowsePage";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
 import AdminDashboardLayout from "./components/layout/AdminDashboardLayout";
@@ -40,6 +36,9 @@ import OrderSuccessPage from "./pages/customer/OrderSuccessPage";
 import OrderTrackingPage from "./pages/customer/OrderTrackingPage";
 import OrderHistoryPage from "./pages/customer/OrderHistoryPage";
 import CustomerDashboardLayout from "./components/layout/CustomerDashboardLayout";
+import AuthLayout from "./components/layout/AuthLayout";
+import AuthRoleSelector from "./components/auth/AuthRoleSelector";
+import AuthForm from "./components/auth/AuthForm";
 
 const App = () => {
     const dispatch = useAppDispatch();
@@ -52,7 +51,7 @@ const App = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        if (isAuthenticated && user?.role === "shopOwner") {
+        if (isAuthenticated && user?.role === "partner") {
             dispatch(getMyShops());
         }
     }, [isAuthenticated, user, dispatch]);
@@ -72,18 +71,22 @@ const App = () => {
                 <Route path="/" element={<LandingLayout />}>
                     <Route index element={<CustomerLandingPage />} />
                     <Route path="partner" element={<PartnerLandingPage />} />
-                    <Route path="driver" element={<DriverLandingPage />} />
+                    <Route path="rider" element={<DriverLandingPage />} />
                 </Route>
 
                 // Auth Routes
                 <Route path="/login">
-                    <Route index element={<LoginSelectorPage />} />
-                    <Route path=":role" element={<LoginPage />} />
-                    <Route path="admin" element={<AdminLoginPage />} />
+                    <Route element={<AuthLayout/>}>
+                        <Route index element={<AuthRoleSelector/>} />
+                        <Route path=":role" element={<AuthForm/>} />
+                        <Route path="admin" element={<AdminLoginPage />} />
+                    </Route>
                 </Route>
                 <Route path="/register">
-                    <Route index element={<RegisterSelectorPage />} />
-                    <Route path=":role" element={<RegisterPage />} />
+                    <Route element={<AuthLayout/>}>
+                        <Route index element={<AuthRoleSelector/>} />
+                        <Route path=":role" element={<AuthForm/>} />
+                    </Route>
                 </Route>
 
                 // Customer Public Routes
