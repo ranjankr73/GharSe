@@ -31,10 +31,10 @@ const ProtectedRoute = ({ allowedRoles, loginPath = "/login" }: Props) => {
         const redirectPath =
             user?.role === "admin"
                 ? "/admin/dashboard"
-                : user?.role === "shopOwner"
-                  ? "/shops/dashboard"
-                  : user?.role === "deliveryAgent"
-                    ? "/driver/dashboard"
+                : user?.role === "partner"
+                  ? "/partner/dashboard"
+                  : user?.role === "rider"
+                    ? "/rider/dashboard"
                     : "/";
 
         return (

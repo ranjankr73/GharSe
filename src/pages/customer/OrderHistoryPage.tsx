@@ -58,7 +58,7 @@ const OrderHistoryPage = () => {
         }
         if (!hasError) {
             toast.success("Items added to cart");
-            navigate("/user/cart");
+            navigate("/customer/cart");
         } else {
             toast.error("Some items could not be added");
         }
@@ -114,7 +114,7 @@ const OrderHistoryPage = () => {
                         action={
                             <Button
                                 onClick={() =>
-                                    navigate("/user/browse-shops")
+                                    navigate("/customer/browse-shops")
                                 }
                             >
                                 Browse Shops

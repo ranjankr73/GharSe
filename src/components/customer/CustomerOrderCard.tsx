@@ -102,7 +102,7 @@ const CustomerOrderCard = ({ order, onReorder }: Props) => {
             <div className="px-4 pb-4 flex gap-2">
                 {isActive ? (
                     <Button
-                        onClick={() => navigate(`/user/orders/${order._id}/track`)}
+                        onClick={() => navigate(`/customer/orders/${order._id}/track`)}
                         size="md"
                         fullWidth
                     >
@@ -110,7 +110,7 @@ const CustomerOrderCard = ({ order, onReorder }: Props) => {
                     </Button>
                 ) : (
                     <Button
-                        onClick={() => navigate(`/user/orders/${order._id}`)}
+                        onClick={() => navigate(`/customer/orders/${order._id}`)}
                         variant="outline"
                         size="md"
                         fullWidth

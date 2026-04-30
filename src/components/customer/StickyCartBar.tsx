@@ -15,7 +15,7 @@ const StickyCartBar = () => {
         <div className="fixed bottom-4 left-0 right-0 z-40 px-4">
             <div className="max-w-2xl mx-auto">
                 <button
-                    onClick={() => navigate("/user/cart")}
+                    onClick={() => navigate("/customer/cart")}
                     className="w-full flex items-center justify-between bg-red-500 hover:bg-red-600 text-white rounded-2xl px-5 py-4 shadow-lg transition active:scale-98 cursor-pointer"
                 >
                     {/* Left */}

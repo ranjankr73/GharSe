@@ -77,7 +77,7 @@ const CartPage = () => {
                         description="Add items from a shop to get started"
                         action={
                             <Button
-                                onClick={() => navigate("/user/browse-shops")}
+                                onClick={() => navigate("/customer/browse-shops")}
                             >
                                 Browse Shops
                             </Button>
@@ -159,7 +159,7 @@ const CartPage = () => {
                                     navigate("/login/customer");
                                     return;
                                 }
-                                navigate("/user/checkout");
+                                navigate("/customer/checkout");
                             }}
                         >
                             {!shop?.isOpen

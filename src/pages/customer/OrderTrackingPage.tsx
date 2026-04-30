@@ -1,4 +1,3 @@
-// pages/customer/OrderTrackingPage.tsx
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
@@ -86,7 +85,7 @@ const OrderTrackingPage = () => {
             <div className="bg-white border-b border-gray-100 sticky top-0 z-30">
                 <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-3">
                     <button
-                        onClick={() => navigate("/user/orders")}
+                        onClick={() => navigate("/customer/orders")}
                         className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 cursor-pointer"
                     >
                         <ArrowLeft size={16} />
@@ -256,7 +255,7 @@ const OrderTrackingPage = () => {
                 {/* Review button */}
                 {order.status === "DELIVERED" && !order.isReviewed && (
                     <button
-                        onClick={() => navigate(`/user/review/${order._id}`)}
+                        onClick={() => navigate(`/customer/review/${order._id}`)}
                         className="w-full py-3 text-sm font-medium text-white bg-red-500 rounded-2xl hover:bg-red-600 transition cursor-pointer"
                     >
                         Rate Your Order ⭐

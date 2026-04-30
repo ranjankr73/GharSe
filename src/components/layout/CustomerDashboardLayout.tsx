@@ -8,18 +8,18 @@ const CustomerDashboardLayout: React.FC = () => {
 
     const navItems = [
         {
-            to: "/user/browse-shops",
+            to: "/customer/browse-shops",
             icon: "🏪",
             label: "Shops",
         },
         {
-            to: "/user/cart",
+            to: "/customer/cart",
             icon: "🛒",
             label: "Cart",
             badge: cart?.totalItems,
         },
         {
-            to: "/user/orders",
+            to: "/customer/orders",
             icon: "📦",
             label: "Orders",
         },
@@ -39,7 +39,7 @@ const CustomerDashboardLayout: React.FC = () => {
                             <NavLink
                                 key={item.to}
                                 to={item.to}
-                                end={item.to === "/user/browse-shops"}
+                                end={item.to === "/customer/browse-shops"}
                                 className={({ isActive }) =>
                                     `
                                     relative text-sm font-medium transition
@@ -78,7 +78,7 @@ const CustomerDashboardLayout: React.FC = () => {
                         <NavLink
                             key={item.to}
                             to={item.to}
-                            end={item.to === "/user/browse-shops"}
+                            end={item.to === "/customer/browse-shops"}
                             className="flex flex-col items-center gap-0.5 relative"
                         >
                             {({ isActive }) => (

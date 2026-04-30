@@ -125,7 +125,7 @@ const App = () => {
                 </Route>
 
                 // Protected Shop Owner Pages
-                <Route element={<ProtectedRoute allowedRoles={["shopOwner"]} loginPath="/login/partner"/>}>
+                <Route element={<ProtectedRoute allowedRoles={["partner"]} loginPath="/login/partner"/>}>
                     <Route path="/partner/dashboard" element={<ShopDashboardLayout/>}>
                         <Route index element={<ShopDashboardPage/>} />
                         <Route path="orders" element={<ShopOrdersPage/>}/>
@@ -138,14 +138,15 @@ const App = () => {
 
                 // Protected Customer Pages
                 <Route element={<ProtectedRoute allowedRoles={["customer"]} loginPath="/login/customer"/>}>
-                    <Route path="/user" element={<CustomerDashboardLayout/>}>
+                    <Route path="/customer" element={<CustomerDashboardLayout/>}>
                         <Route path="browse-shops" element={<ShopBrowsePage/>}/>
                         <Route path="cart" element={<CartPage/>}/>
                         <Route path="checkout" element={<CheckoutPage/>}/>
                         <Route path="orders" element={<OrderHistoryPage/>}/>
                     </Route>
-                    <Route path="/user/orders/:orderId/success" element={<OrderSuccessPage/>}/>
-                    <Route path="/user/orders/:orderId/track" element={<OrderTrackingPage/>}/>
+                    <Route path="/customer/shop/:shopId" element={<ShopDetailPage/>}/>
+                    <Route path="/customer/orders/:orderId/success" element={<OrderSuccessPage/>}/>
+                    <Route path="/customer/orders/:orderId/track" element={<OrderTrackingPage/>}/>
                 </Route>
             </Routes>
         </BrowserRouter>

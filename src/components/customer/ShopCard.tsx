@@ -14,7 +14,7 @@ const ShopCard = ({ shop }: Props) => {
 
     return (
         <div
-            onClick={() => navigate(isAuthenticated ? `/user/shop/${shop._id}` : `/shop/${shop._id}`)}
+            onClick={() => navigate(isAuthenticated ? `/customer/shop/${shop._id}` : `/shop/${shop._id}`)}
             className="group cursor-pointer shadow-sm rounded-2xl overflow-hidden bg-white border border-gray-200 transition hover:shadow-md p-2"
         >
             {/* Image */}

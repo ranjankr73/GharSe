@@ -84,14 +84,14 @@ const OrderSuccessPage = () => {
                     <div className="space-y-3">
                         <Button
                             fullWidth
-                            onClick={() => navigate(`/user/orders/${activeOrder._id}/track`)}
+                            onClick={() => navigate(`/customer/orders/${activeOrder._id}/track`)}
                         >
                             Track Order
                         </Button>
                         <Button
                             fullWidth
                             variant="outline"
-                            onClick={() => navigate("/user/browse-shops")}
+                            onClick={() => navigate("/customer/browse-shops")}
                         >
                             Continue Shopping
                         </Button>

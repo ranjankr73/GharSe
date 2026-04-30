@@ -38,7 +38,7 @@ const CheckoutPage = () => {
 
     useEffect(() => {
         if (!cart || cart.items.length === 0) {
-            navigate("/user/cart");
+            navigate("/customer/cart");
         }
     }, [cart, navigate]);
 
@@ -65,7 +65,7 @@ const CheckoutPage = () => {
 
         if (placeOrder.fulfilled.match(result)) {
             toast.success("Order placed successfully! 🎉");
-            navigate(`/user/orders/${result.payload.order._id}/success`);
+            navigate(`/customer/orders/${result.payload.order._id}/success`);
         } else {
             toast.error(result.payload as string ?? "Failed to place order");
         }
@@ -77,7 +77,7 @@ const CheckoutPage = () => {
             <div className="bg-white border-b border-gray-100 sticky top-0 z-30">
                 <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-3">
                     <button
-                        onClick={() => navigate("/user/cart")}
+                        onClick={() => navigate("/customer/cart")}
                         className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 cursor-pointer"
                     >
                         <ArrowLeft size={16} />
