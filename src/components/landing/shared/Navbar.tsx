@@ -8,7 +8,7 @@ import { useAppSelector } from "../../../hooks/useAppSelector";
 const navItems = [
     { title: "Order Food", to: "/" },
     { title: "Partner With Us", to: "/partner" },
-    { title: "Deliver With Us", to: "/driver" },
+    { title: "Deliver With Us", to: "/rider" },
 ];
 
 const Navbar = () => {
@@ -36,15 +36,15 @@ const Navbar = () => {
     const handleDashboardRedirect = () => {
         switch (user?.role) {
             case "customer":
-                navigate("/customers/browse-shops");
+                navigate("/customer/browse-shops");
                 break;
 
-            case "shopOwner":
-                navigate("/shops/dashboard");
+            case "partner":
+                navigate("/partner/dashboard");
                 break;
 
-            case "deliveryAgent":
-                navigate("/drivers/dashboard");
+            case "rider":
+                navigate("/rider/dashboard");
                 break;
 
             case "admin":
@@ -87,7 +87,7 @@ const Navbar = () => {
                 <div className="flex items-center gap-2">
                     {isAuthenticated ? (
                         <Button size="md" onClick={handleDashboardRedirect}>
-                            {user?.role === "customer" ? "My Orders" : user?.role === "deliveryAgent" ? "My Deliveries" : "Dashboard"}
+                            {user?.role === "customer" ? "My Orders" : user?.role === "rider" ? "My Deliveries" : "Dashboard"}
                         </Button>
                     ) : (
                         <>
