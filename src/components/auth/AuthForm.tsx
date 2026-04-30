@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link, useNavigate } from "react-router";
+import { useParams, Link, useNavigate, useLocation } from "react-router";
 import toast from "react-hot-toast";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -9,14 +9,15 @@ import Button from "../ui/Button";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { registerUser, loginUser } from "../../features/auth/authThunks";
-import { roleMap } from "../../utils/authRoleMap";
+import type { UserRole } from "../../features/auth/authTypes";
 
-const AuthForm = ({ mode }: { mode: "login" | "register" }) => {
+const AuthForm = () => {
     const { role } = useParams();
 
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
+    const location = useLocation();
 
+    const dispatch = useAppDispatch();
     const { status } = useAppSelector((state) => state.auth);
 
     const [fullName, setFullName] = useState("");
@@ -25,15 +26,15 @@ const AuthForm = ({ mode }: { mode: "login" | "register" }) => {
     const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async () => {
-        if (!email || !password || (mode === "register" && !fullName)) {
+        if (!email || !password || (location.pathname.includes("register") && !fullName)) {
             toast.error("Please fill all fields");
             return;
         }
 
         try {
-            if (mode === "login") {
+            if (location.pathname.includes("login")) {
                 const user = await dispatch(
-                    loginUser({ email, password })
+                    loginUser({ email, password }),
                 ).unwrap();
 
                 toast.success("Welcome back");
@@ -61,8 +62,8 @@ const AuthForm = ({ mode }: { mode: "login" | "register" }) => {
                         fullName,
                         email,
                         password,
-                        role: roleMap[role as keyof typeof roleMap],
-                    })
+                        role: role as UserRole,
+                    }),
                 ).unwrap();
 
                 toast.success("Account created");
@@ -86,7 +87,7 @@ const AuthForm = ({ mode }: { mode: "login" | "register" }) => {
 
     return (
         <div className="w-full max-w-sm space-y-6">
-            {mode === "register" && (
+            {location.pathname.includes("register") && (
                 <InputField
                     label="Full Name"
                     value={fullName}
@@ -121,18 +122,14 @@ const AuthForm = ({ mode }: { mode: "login" | "register" }) => {
                 isLoading={status === "loading"}
                 fullWidth
             >
-                {mode === "login" ? "Sign In" : "Create Account"}
+                {location.pathname.includes("login") ? "Sign In" : "Create Account"}
             </Button>
 
             <p className="text-sm text-center">
-                {mode === "login" ? (
-                    <Link to={`/register/${role}`}>
-                        Create account
-                    </Link>
+                {location.pathname.includes("login") ? (
+                    <Link to={`/register/${role}`}>Create account</Link>
                 ) : (
-                    <Link to={`/login/${role}`}>
-                        Already have an account?
-                    </Link>
+                    <Link to={`/login/${role}`}>Already have an account?</Link>
                 )}
             </p>
         </div>

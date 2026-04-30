@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 const roles = [
     {
@@ -16,19 +16,20 @@ const roles = [
     {
         title: "Delivery Partner",
         desc: "Deliver and earn",
-        path: "agent",
+        path: "rider",
         icon: "🛵",
     },
 ];
 
-const AuthRoleSelector = ({ mode }: { mode: "login" | "register" }) => {
+const AuthRoleSelector = () => {
     const navigate = useNavigate();
+    const location = useLocation();
 
     return (
         <div className="w-full max-w-md space-y-6">
             <div className="text-center">
                 <h1 className="text-2xl font-semibold">
-                    {mode === "login"
+                    {location.pathname.includes("login")
                         ? "Choose your account"
                         : "Join GharSe"}
                 </h1>
@@ -42,7 +43,7 @@ const AuthRoleSelector = ({ mode }: { mode: "login" | "register" }) => {
                 {roles.map((role) => (
                     <button
                         key={role.path}
-                        onClick={() => navigate(`/${mode}/${role.path}`)}
+                        onClick={() => navigate(`${role.path}`)}
                         className="w-full text-left border border-gray-100 rounded-2xl p-5 hover:border-red-200 hover:bg-red-50 transition"
                     >
                         <div className="flex items-center gap-4">
