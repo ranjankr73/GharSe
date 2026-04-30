@@ -1,4 +1,3 @@
-// services/publicShopApi.ts
 import api from "./axiosInstance";
 
 export const getPublicShopsApi = async (
