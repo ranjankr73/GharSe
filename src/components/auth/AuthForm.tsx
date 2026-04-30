@@ -3,13 +3,13 @@ import { useParams, Link, useNavigate, useLocation } from "react-router";
 import toast from "react-hot-toast";
 import { Eye, EyeOff } from "lucide-react";
 
-import InputField from "../ui/InputField";
-import Button from "../ui/Button";
-
+import type { UserRole } from "../../features/auth/authTypes";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { registerUser, loginUser } from "../../features/auth/authThunks";
-import type { UserRole } from "../../features/auth/authTypes";
+
+import InputField from "../ui/InputField";
+import Button from "../ui/Button";
 
 const AuthForm = () => {
     const { role } = useParams();
@@ -32,32 +32,16 @@ const AuthForm = () => {
         }
 
         try {
+            let data;
+
             if (location.pathname.includes("login")) {
-                const user = await dispatch(
+                data = await dispatch(
                     loginUser({ email, password }),
                 ).unwrap();
 
                 toast.success("Welcome back");
-
-                switch (user?.user?.role) {
-                    case "customer":
-                        navigate("/user/browse-shops");
-                        break;
-
-                    case "shopOwner":
-                        navigate("/partner/dashboard");
-                        break;
-
-                    case "deliveryAgent":
-                        navigate("/drivers/dashboard");
-                        break;
-
-                    case "admin":
-                        navigate("/admin/dashboard");
-                        break;
-                }
             } else {
-                await dispatch(
+                data = await dispatch(
                     registerUser({
                         fullName,
                         email,
@@ -67,17 +51,28 @@ const AuthForm = () => {
                 ).unwrap();
 
                 toast.success("Account created");
+            }
 
-                if (role === "customer") {
-                    navigate("/user/browse-shops");
-                }
+            if(data){
+                switch(data.user.role as UserRole){
+                    case "admin":
+                        navigate("/admin/dashboard");
+                        break;
+                    
+                    case "partner":
+                        navigate("/partner/dashboard");
+                        break;
 
-                if (role === "shop-owner") {
-                    navigate("/partner/dashboard");
-                }
-
-                if (role === "driver") {
-                    navigate("/drivers/dashboard");
+                    case "rider":
+                        navigate("/rider/dashboard");
+                        break;
+                    
+                    case "customer":
+                        navigate("/customer/browse-shops");
+                        break;
+                    
+                    default:
+                        navigate("/");
                 }
             }
         } catch (error: any) {
@@ -122,7 +117,7 @@ const AuthForm = () => {
                 isLoading={status === "loading"}
                 fullWidth
             >
-                {location.pathname.includes("login") ? "Sign In" : "Create Account"}
+                {location.pathname.includes("login") ? "Log In" : "Create Account"}
             </Button>
 
             <p className="text-sm text-center">
