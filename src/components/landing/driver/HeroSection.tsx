@@ -10,9 +10,9 @@ const HeroSection = () => {
 
     const handlePrimaryCTA = () => {
         navigate(
-            isAuthenticated && user?.role === "deliveryAgent"
-                ? "/drivers/dashboard"
-                : "/register/driver"
+            isAuthenticated && user?.role === "rider"
+                ? "/rider/dashboard"
+                : "/register/rider"
         );
     };
 
@@ -61,7 +61,7 @@ const HeroSection = () => {
                         className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start"
                     >
                         <Button onClick={handlePrimaryCTA} size="lg">
-                            {isAuthenticated && user?.role === "deliveryAgent"
+                            {isAuthenticated && user?.role === "rider"
                                 ? "Go to Dashboard"
                                 : "Join as Driver"}
                         </Button>
@@ -69,7 +69,7 @@ const HeroSection = () => {
                         <Button
                             variant="outline"
                             size="lg"
-                            onClick={() => navigate("/login/driver")}
+                            onClick={() => navigate("/login/rider")}
                         >
                             Driver Login
                         </Button>

@@ -10,9 +10,9 @@ const PartnerHero = () => {
 
     const handlePrimaryCTA = () => {
         navigate(
-            isAuthenticated && user?.role === "shopOwner"
-                ? "/shops/dashboard"
-                : "/register/shop-owner"
+            isAuthenticated && user?.role === "partner"
+                ? "/partner/dashboard"
+                : "/register/partner"
         );
     };
 
@@ -61,7 +61,7 @@ const PartnerHero = () => {
                         className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start"
                     >
                         <Button onClick={handlePrimaryCTA} size="lg">
-                            {isAuthenticated && user?.role === "shopOwner"
+                            {isAuthenticated && user?.role === "partner"
                                 ? "Go to Dashboard"
                                 : "Start Selling"}
                         </Button>
@@ -69,7 +69,7 @@ const PartnerHero = () => {
                         <Button
                             variant="outline"
                             size="lg"
-                            onClick={() => navigate("/login/shop-owner")}
+                            onClick={() => navigate("/login/partner")}
                         >
                             Partner Login
                         </Button>

@@ -11,7 +11,7 @@ const CustomerHero = () => {
     const handlePrimaryCTA = () => {
         navigate(
             isAuthenticated && user?.role === "customer"
-                ? "/customers/browse-shops"
+                ? "/customer/browse-shops"
                 : "/register"
         );
     };
@@ -141,7 +141,7 @@ const CustomerHero = () => {
                             ))}
                         </div>
 
-                        <div className="mt-6 bg-red-500 text-white text-center py-3 rounded-2xl text-sm font-medium">
+                        <div className="mt-6 bg-red-500 text-white text-center py-3 rounded-2xl text-sm font-medium" aria-label="This is just for visual. Not Clickable">
                             Checkout • ₹130
                         </div>
                     </motion.div>
