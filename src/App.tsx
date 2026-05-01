@@ -179,6 +179,8 @@ const App = () => {
                         element={<OrderTrackingPage />}
                     />
                 </Route>
+
+                <Route path="*" element={<div>Page Not Found</div>} />
             </Routes>
         </BrowserRouter>
     );
