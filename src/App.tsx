@@ -67,13 +67,14 @@ const App = () => {
     return (
         <BrowserRouter>
             <Routes>
-                // Public Pages
+                {/* Public Pages */}
                 <Route path="/" element={<LandingLayout />}>
                     <Route index element={<CustomerLandingPage />} />
                     <Route path="partner" element={<PartnerLandingPage />} />
                     <Route path="rider" element={<DriverLandingPage />} />
                 </Route>
-                // Auth Routes
+
+                {/* Auth Routes */}
                 <Route path="/login" element={<AuthLayout />}>
                     <Route index element={<AuthRoleSelector />} />
                     <Route path=":role" element={<AuthForm />} />
@@ -83,10 +84,12 @@ const App = () => {
                     <Route index element={<AuthRoleSelector />} />
                     <Route path=":role" element={<AuthForm />} />
                 </Route>
-                // Customer Public Routes
+
+                {/* Customer Public Routes */}
                 <Route path="/browse-shops" element={<ShopBrowsePage />} />
                 <Route path="/shop/:shopId" element={<ShopDetailPage />} />
-                // Protected Admin Routes
+                
+                {/* Protected Admin Routes */}
                 <Route
                     element={
                         <ProtectedRoute
@@ -116,7 +119,8 @@ const App = () => {
                         />
                     </Route>
                 </Route>
-                // Protected Shop Owner Pages
+
+                {/* Protected Shop Owner Pages */}
                 <Route
                     element={
                         <ProtectedRoute
@@ -140,7 +144,8 @@ const App = () => {
                         <Route path="create" element={<ShopCreatePage />} />
                     </Route>
                 </Route>
-                // Protected Customer Pages
+
+                {/* Protected Customer Pages */}
                 <Route
                     element={
                         <ProtectedRoute
