@@ -73,26 +73,19 @@ const App = () => {
                     <Route path="partner" element={<PartnerLandingPage />} />
                     <Route path="rider" element={<DriverLandingPage />} />
                 </Route>
-
                 // Auth Routes
-                <Route path="/login">
-                    <Route element={<AuthLayout/>}>
-                        <Route index element={<AuthRoleSelector/>} />
-                        <Route path=":role" element={<AuthForm/>} />
-                        <Route path="admin" element={<AdminLoginPage />} />
-                    </Route>
+                <Route path="/login" element={<AuthLayout />}>
+                    <Route index element={<AuthRoleSelector />} />
+                    <Route path=":role" element={<AuthForm />} />
+                    <Route path="admin" element={<AdminLoginPage />} />
                 </Route>
-                <Route path="/register">
-                    <Route element={<AuthLayout/>}>
-                        <Route index element={<AuthRoleSelector/>} />
-                        <Route path=":role" element={<AuthForm/>} />
-                    </Route>
+                <Route path="/register" element={<AuthLayout />}>
+                    <Route index element={<AuthRoleSelector />} />
+                    <Route path=":role" element={<AuthForm />} />
                 </Route>
-
                 // Customer Public Routes
                 <Route path="/browse-shops" element={<ShopBrowsePage />} />
-                <Route path="/shop/:shopId" element={<ShopDetailPage/>}/>
-
+                <Route path="/shop/:shopId" element={<ShopDetailPage />} />
                 // Protected Admin Routes
                 <Route
                     element={
@@ -123,30 +116,63 @@ const App = () => {
                         />
                     </Route>
                 </Route>
-
                 // Protected Shop Owner Pages
-                <Route element={<ProtectedRoute allowedRoles={["partner"]} loginPath="/login/partner"/>}>
-                    <Route path="/partner/dashboard" element={<ShopDashboardLayout/>}>
-                        <Route index element={<ShopDashboardPage/>} />
-                        <Route path="orders" element={<ShopOrdersPage/>}/>
-                        <Route path="products" element={<ShopProductsPage/>}/>
-                        <Route path="categories" element={<ShopCategoriesPage/>}/>
-                        <Route path="settings" element={<ShopSettingsPage/>}/>
-                        <Route path="create" element={<ShopCreatePage/>}/>
+                <Route
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={["partner"]}
+                            loginPath="/login/partner"
+                        />
+                    }
+                >
+                    <Route
+                        path="/partner/dashboard"
+                        element={<ShopDashboardLayout />}
+                    >
+                        <Route index element={<ShopDashboardPage />} />
+                        <Route path="orders" element={<ShopOrdersPage />} />
+                        <Route path="products" element={<ShopProductsPage />} />
+                        <Route
+                            path="categories"
+                            element={<ShopCategoriesPage />}
+                        />
+                        <Route path="settings" element={<ShopSettingsPage />} />
+                        <Route path="create" element={<ShopCreatePage />} />
                     </Route>
                 </Route>
-
                 // Protected Customer Pages
-                <Route element={<ProtectedRoute allowedRoles={["customer"]} loginPath="/login/customer"/>}>
-                    <Route path="/customer" element={<CustomerDashboardLayout/>}>
-                        <Route path="browse-shops" element={<ShopBrowsePage/>}/>
-                        <Route path="cart" element={<CartPage/>}/>
-                        <Route path="checkout" element={<CheckoutPage/>}/>
-                        <Route path="orders" element={<OrderHistoryPage/>}/>
+                <Route
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={["customer"]}
+                            loginPath="/login/customer"
+                        />
+                    }
+                >
+                    <Route
+                        path="/customer"
+                        element={<CustomerDashboardLayout />}
+                    >
+                        <Route
+                            path="browse-shops"
+                            element={<ShopBrowsePage />}
+                        />
+                        <Route path="cart" element={<CartPage />} />
+                        <Route path="checkout" element={<CheckoutPage />} />
+                        <Route path="orders" element={<OrderHistoryPage />} />
                     </Route>
-                    <Route path="/customer/shop/:shopId" element={<ShopDetailPage/>}/>
-                    <Route path="/customer/orders/:orderId/success" element={<OrderSuccessPage/>}/>
-                    <Route path="/customer/orders/:orderId/track" element={<OrderTrackingPage/>}/>
+                    <Route
+                        path="/customer/shop/:shopId"
+                        element={<ShopDetailPage />}
+                    />
+                    <Route
+                        path="/customer/orders/:orderId/success"
+                        element={<OrderSuccessPage />}
+                    />
+                    <Route
+                        path="/customer/orders/:orderId/track"
+                        element={<OrderTrackingPage />}
+                    />
                 </Route>
             </Routes>
         </BrowserRouter>
