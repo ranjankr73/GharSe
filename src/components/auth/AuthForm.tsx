@@ -77,6 +77,10 @@ const AuthForm = () => {
             }
         } catch (error: any) {
             toast.error(error?.message);
+        } finally {
+            setFullName("");
+            setEmail("");
+            setPassword("");
         }
     };
 
