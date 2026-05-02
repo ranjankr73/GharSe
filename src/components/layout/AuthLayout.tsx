@@ -9,6 +9,7 @@ import Logo from "../ui/Logo";
 import { useEffect } from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import type { UserRole } from "../../features/auth/authTypes";
+import toast from "react-hot-toast";
 
 const roleContent = {
     customer: {
@@ -34,6 +35,15 @@ const AuthLayout = () => {
     const navigate = useNavigate();
     const { role } = useParams();
     const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+
+    useEffect(() => {
+        if(location.pathname === "/register/admin"){
+            navigate("/register", { replace: true });
+
+            toast.error("Admin registration is not allowed through this portal. Please contact support.", { duration: 8000 });
+        }
+
+    }, []);
 
     useEffect(() => {
         if(role && !(role in roleContent)){

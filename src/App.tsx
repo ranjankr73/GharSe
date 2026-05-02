@@ -12,7 +12,6 @@ import LandingLayout from "./components/layout/LandingLayout";
 import CustomerLandingPage from "./pages/landing/CustomerLandingPage";
 import PartnerLandingPage from "./pages/landing/PartnerLandingPage";
 import DriverLandingPage from "./pages/landing/DriverLandingPage";
-import AdminLoginPage from "./pages/auth/AdminLoginPage";
 import ShopBrowsePage from "./pages/customer/ShopBrowsePage";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
 import AdminDashboardLayout from "./components/layout/AdminDashboardLayout";
@@ -78,7 +77,6 @@ const App = () => {
                 <Route path="/login" element={<AuthLayout />}>
                     <Route index element={<AuthRoleSelector />} />
                     <Route path=":role" element={<AuthForm />} />
-                    <Route path="admin" element={<AdminLoginPage />} />
                 </Route>
                 <Route path="/register" element={<AuthLayout />}>
                     <Route index element={<AuthRoleSelector />} />

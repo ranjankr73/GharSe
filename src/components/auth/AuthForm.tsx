@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate, useLocation } from "react-router";
 import toast from "react-hot-toast";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Shield } from "lucide-react";
 
 import type { UserRole } from "../../features/auth/authTypes";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
@@ -25,8 +25,12 @@ const AuthForm = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
+    const isAdmin = role === "admin";
+    const isLogin = location.pathname.includes("login");
+    const isRegister = location.pathname.includes("register");
+
     const handleSubmit = async () => {
-        if (!email || !password || (location.pathname.includes("register") && !fullName)) {
+        if (!email || !password || (isRegister && !fullName)) {
             toast.error("Please fill all fields");
             return;
         }
@@ -34,10 +38,8 @@ const AuthForm = () => {
         try {
             let data;
 
-            if (location.pathname.includes("login")) {
-                data = await dispatch(
-                    loginUser({ email, password }),
-                ).unwrap();
+            if (isLogin) {
+                data = await dispatch(loginUser({ email, password })).unwrap();
 
                 toast.success("Welcome back");
             } else {
@@ -53,12 +55,12 @@ const AuthForm = () => {
                 toast.success("Account created");
             }
 
-            if(data){
-                switch(data.user.role as UserRole){
+            if (data) {
+                switch (data.user.role as UserRole) {
                     case "admin":
                         navigate("/admin/dashboard", { replace: true });
                         break;
-                    
+
                     case "partner":
                         navigate("/partner/dashboard", { replace: true });
                         break;
@@ -66,11 +68,11 @@ const AuthForm = () => {
                     case "rider":
                         navigate("/rider/dashboard", { replace: true });
                         break;
-                    
+
                     case "customer":
                         navigate("/customer/browse-shops", { replace: true });
                         break;
-                    
+
                     default:
                         navigate("/", { replace: true });
                 }
@@ -85,56 +87,89 @@ const AuthForm = () => {
     };
 
     return (
-        <div className="w-full max-w-sm space-y-6">
-            {location.pathname.includes("register") && (
-                <InputField
-                    label="Full Name"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                />
+        <div className="w-full max-w-sm">
+            {isAdmin && (
+                <div className="text-center mb-8">
+                    <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <Shield size={22} className="text-red-500" />
+                    </div>
+
+                    <div className="text-xl font-bold mb-1">
+                        <span className="text-slate-800">Ghar</span>
+                        <span className="text-red-500">Se</span>
+                    </div>
+
+                    <h1 className="text-sm font-semibold text-slate-800 mt-2">
+                        Admin Login
+                    </h1>
+
+                    <p className="text-xs text-slate-400 mt-1">
+                        Restricted access — authorised personnel only
+                    </p>
+                </div>
             )}
 
-            <InputField
-                label="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-            />
+            <div className="space-y-6">
+                {isRegister && (
+                    <InputField
+                        label="Full Name"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                    />
+                )}
 
-            <div className="relative">
                 <InputField
-                    label="Password"
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    label="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                 />
 
-                <button
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute right-3 top-9"
+                <div className="relative">
+                    <InputField
+                        label="Password"
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+
+                    <button
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="absolute right-3 top-9"
+                    >
+                        {showPassword ? (
+                            <EyeOff size={18} />
+                        ) : (
+                            <Eye size={18} />
+                        )}
+                    </button>
+                </div>
+
+                <Button
+                    onClick={handleSubmit}
+                    isLoading={status === "loading"}
+                    fullWidth
                 >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-            </div>
+                    {isLogin ? "Log In" : "Create Account"}
+                </Button>
 
-            <Button
-                onClick={handleSubmit}
-                isLoading={status === "loading"}
-                fullWidth
-            >
-                {location.pathname.includes("login") ? "Log In" : "Create Account"}
-            </Button>
-
-            <p className="text-sm text-center">
-                {location.pathname.includes("login") ? (
-                    <Link to={`/register/${role}`} replace>
-                        Create account
-                    </Link>
+                {isAdmin ? (
+                    <p className="text-xs text-slate-400 text-center mt-6">
+                        All admin actions are logged and monitored.
+                    </p>
                 ) : (
-                    <Link to={`/login/${role}`} replace>
-                        Already have an account?
-                    </Link>
+                    <p className="text-sm text-center">
+                        {isLogin ? (
+                            <Link to={`/register/${role}`} replace>
+                                Create account
+                            </Link>
+                        ) : (
+                            <Link to={`/login/${role}`} replace>
+                                Already have an account?
+                            </Link>
+                        )}
+                    </p>
                 )}
-            </p>
+            </div>
         </div>
     );
 };
