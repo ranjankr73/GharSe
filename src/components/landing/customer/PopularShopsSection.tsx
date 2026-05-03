@@ -1,40 +1,26 @@
-import { motion } from "framer-motion";
-import Button from "../../ui/Button";
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
-
-const shops = [
-    {
-        name: "Fresh Basket",
-        category: "Groceries",
-        rating: "4.8",
-        deliveryTime: "20–30 min",
-        badge: "Best seller",
-    },
-    {
-        name: "Daily Needs",
-        category: "Essentials",
-        rating: "4.6",
-        deliveryTime: "15–25 min",
-        badge: "Fast delivery",
-    },
-    {
-        name: "Quick Mart",
-        category: "Snacks & Drinks",
-        rating: "4.7",
-        deliveryTime: "25–35 min",
-        badge: "Popular",
-    },
-    {
-        name: "City Grocery",
-        category: "Household",
-        rating: "4.5",
-        deliveryTime: "20–40 min",
-        badge: "Trusted",
-    },
-];
+import { motion } from "framer-motion";
+import { RiArrowDownDoubleFill } from "react-icons/ri";
+import { useAppDispatch } from "../../../hooks/useAppDispatch";
+import { useAppSelector } from "../../../hooks/useAppSelector";
+import { getPublicShops } from "../../../features/publicShop/publicShopThunks";
 
 const PopularShopsSection = () => {
+    const dispatch = useAppDispatch();
+    const { user } = useAppSelector((state) => state.auth);
+    const { shops } = useAppSelector((state) => state.publicShop);
+
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const params: Record<string, string | number> = {
+            page: 1,
+            limit: 4,
+        };
+
+        dispatch(getPublicShops(params));
+    }, [dispatch]);
 
     return (
         <section className="py-20 bg-white">
@@ -67,7 +53,12 @@ const PopularShopsSection = () => {
                                 duration: 0.4,
                             }}
                             viewport={{ once: true }}
-                            className="group bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300"
+                            onClick={() => {
+                                user?.role === "customer"
+                                    ? navigate(`/customer/shop/${shop._id}`)
+                                    : navigate(`/shop/${shop._id}`);
+                            }}
+                            className="group bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
                         >
                             {/* Shop visual placeholder */}
                             <div className="w-full h-32 rounded-xl bg-linear-to-br from-red-50 to-gray-50 flex items-center justify-center text-4xl mb-4">
@@ -76,7 +67,8 @@ const PopularShopsSection = () => {
 
                             {/* Badge */}
                             <span className="inline-flex px-2.5 py-1 rounded-full bg-red-50 text-red-500 text-xs font-medium mb-3">
-                                {shop.badge}
+                                {/* {shop.badge} */}
+                                Best Seller
                             </span>
 
                             {/* Name */}
@@ -86,26 +78,35 @@ const PopularShopsSection = () => {
 
                             {/* Category */}
                             <p className="text-sm text-gray-500 mt-1">
-                                {shop.category}
+                                {/* {shop.category} */}
+                                Fast Foods
                             </p>
 
                             {/* Meta */}
                             <div className="flex items-center justify-between mt-4 text-xs text-gray-600">
                                 <span>⭐ {shop.rating}</span>
-                                <span>🛵 {shop.deliveryTime}</span>
+                                <span>🛵 {shop.deliveryTime} min</span>
                             </div>
                         </motion.div>
                     ))}
                 </div>
 
                 {/* Bottom CTA */}
-                <div className="flex justify-center mt-10">
-                    <Button
-                        size="lg"
-                        onClick={() => navigate("/browse-shops")}
-                    >
-                        Explore all shops
-                    </Button>
+                <div
+                    onClick={() => {
+                        user?.role === "customer"
+                            ? navigate("/customer/browse-shops")
+                            : navigate("/browse-shops");
+                    }}
+                    className="flex justify-center mt-12"
+                >
+                    <div className="flex flex-col items-center gap-2 text-center cursor-pointer group">
+                        <RiArrowDownDoubleFill className="text-red-500 text-xl animate-bounce" />
+
+                        <p className="text-sm font-medium text-slate-700 group-hover:text-red-500 transition">
+                            Explore all shops
+                        </p>
+                    </div>
                 </div>
             </div>
         </section>
