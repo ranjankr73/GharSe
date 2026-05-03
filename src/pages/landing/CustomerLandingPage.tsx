@@ -7,14 +7,21 @@ import CTASection from "../../components/landing/customer/CTASection";
 
 const CustomerLandingPage = () => {
     return (
-        <>
-            <HeroSection />
-            <PopularShopsSection />
-            <CustomerHowItWorksSection />
-            <FeaturesSection />
-            <WhyLocalShoppingSection />
-            <CTASection />
-        </>
+        <div className="relative overflow-hidden bg-linear-to-b from-red-50 via-white to-slate-50">
+            {/* Content */}
+            <div className="relative z-10">
+                <HeroSection />
+
+                <PopularShopsSection />
+
+                <CustomerHowItWorksSection />
+
+                <FeaturesSection />
+
+                <WhyLocalShoppingSection />
+                <CTASection />
+            </div>
+        </div>
     );
 };
 

@@ -6,10 +6,10 @@ const footerSections = [
     {
         title: "Customers",
         links: [
-            { label: "Browse Shops", to: "/customers/browse-shops" },
-            { label: "Track Order", to: "/customers/orders" },
-            { label: "My Orders", to: "/customers/orders" },
-            { label: "Cart", to: "/customers/cart" },
+            { label: "Browse Shops", to: "/customer/browse-shops" },
+            { label: "Track Order", to: "/customer/orders" },
+            { label: "My Orders", to: "/customer/orders" },
+            { label: "Cart", to: "/customer/cart" },
             { label: "Offers", to: "/offers" },
         ],
     },
@@ -17,18 +17,18 @@ const footerSections = [
         title: "Partners",
         links: [
             { label: "Partner With Us", to: "/partner" },
-            { label: "Partner Login", to: "/login/shop-owner" },
+            { label: "Partner Login", to: "/login/partner" },
             { label: "Pricing", to: "/partner/pricing" },
             { label: "Partner Support", to: "/support" },
         ],
     },
     {
-        title: "Drivers",
+        title: "Riders",
         links: [
-            { label: "Become a Driver", to: "/driver" },
-            { label: "Driver Login", to: "/login/driver" },
-            { label: "Driver Earnings", to: "/drivers/earnings" },
-            { label: "Driver Support", to: "/support" },
+            { label: "Become a Rider", to: "/rider" },
+            { label: "Rider Login", to: "/login/rider" },
+            { label: "Rider Earnings", to: "/rider/earnings" },
+            { label: "Rider Support", to: "/support" },
         ],
     },
     {
@@ -64,44 +64,45 @@ const footerSections = [
 
 const Footer = () => {
     return (
-        <footer className="relative bg-white border-t border-gray-100 pt-16 pb-12 overflow-hidden">
-            {/* Big faded brand */}
+        <footer className="relative bg-white border-t border-slate-200 overflow-hidden">
+            {/* Soft brand background */}
             <div
                 aria-hidden="true"
-                className="absolute bottom-28 md:bottom-12 left-1/2 -translate-x-1/2 text-[90px] md:text-[180px] font-bold pointer-events-none select-none flex gap-2 opacity-30"
+                className="absolute bottom-44 md:bottom-36 left-1/2 -translate-x-1/2 text-[110px] md:text-[220px] font-bold tracking-tight pointer-events-none select-none opacity-[0.50] whitespace-nowrap leading-none"
             >
-                <span className="text-gray-500">Ghar</span>
+                <span className="text-slate-900">Ghar</span>
                 <span className="text-red-500">Se</span>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 relative z-10 space-y-32 md:space-y-48">
-                {/* Top */}
-                <div className="grid gap-10 md:grid-cols-3 lg:grid-cols-7 text-center md:text-left">
-                    {/* Brand */}
-                    <div className="lg:col-span-1 space-y-4">
-                        <div className="flex justify-center md:justify-start">
-                            <Logo />
-                        </div>
+            {/* Soft glow */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-112.5 h-50 bg-red-100 blur-3xl opacity-40 rounded-full" />
 
-                        <p className="text-sm text-gray-500 max-w-xs mx-auto md:mx-0">
+            <div className="relative z-10 max-w-7xl mx-auto px-4 py-16">
+                {/* Top */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-10 md:gap-12">
+                    {/* Brand */}
+                    <div className="col-span-2 md:col-span-3 lg:col-span-1 space-y-5">
+                        <Logo />
+
+                        <p className="text-sm text-slate-500 leading-relaxed">
                             Fast, local, and reliable ordering from nearby
-                            shops.
+                            trusted shops.
                         </p>
                     </div>
 
-                    {/* Sections */}
+                    {/* Links */}
                     {footerSections.map((section) => (
                         <div key={section.title}>
-                            <h3 className="text-sm font-semibold text-gray-800 mb-3">
+                            <h3 className="text-sm font-semibold text-slate-900 mb-4">
                                 {section.title}
                             </h3>
 
-                            <ul className="space-y-2 text-sm text-gray-500">
+                            <ul className="space-y-3">
                                 {section.links.map((link) => (
                                     <li key={link.label}>
                                         <Link
                                             to={link.to}
-                                            className="hover:text-red-500 transition"
+                                            className="text-sm text-slate-500 hover:text-red-500 transition-colors"
                                         >
                                             {link.label}
                                         </Link>
@@ -112,9 +113,12 @@ const Footer = () => {
                     ))}
                 </div>
 
+                {/* Divider */}
+                <div className="md:mt-60 mt-32 h-px bg-slate-200" />
+
                 {/* Bottom */}
-                <div className="pt-6 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-400">
-                    <p>
+                <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-5">
+                    <p className="text-sm text-slate-400">
                         © {new Date().getFullYear()} GharSe. All rights
                         reserved.
                     </p>
@@ -123,17 +127,17 @@ const Footer = () => {
                         {[
                             {
                                 icon: <FaXTwitter size={16} />,
-                                href: "https://twitter.com/gharse",
+                                href: "/",
                                 label: "X",
                             },
                             {
                                 icon: <FaInstagram size={16} />,
-                                href: "https://instagram.com/gharse",
+                                href: "/",
                                 label: "Instagram",
                             },
                             {
                                 icon: <FaYoutube size={16} />,
-                                href: "https://youtube.com/@gharse",
+                                href: "/",
                                 label: "YouTube",
                             },
                         ].map(({ icon, href, label }) => (
@@ -142,7 +146,7 @@ const Footer = () => {
                                 href={href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-2 rounded-full bg-gray-50 hover:bg-red-50 text-gray-500 hover:text-red-500 transition"
+                                className="w-10 h-10 rounded-2xl bg-slate-50 hover:bg-red-50 flex items-center justify-center text-slate-500 hover:text-red-500 transition-all"
                             >
                                 {icon}
                             </a>

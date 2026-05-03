@@ -1,17 +1,17 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
-import { RiArrowDownDoubleFill } from "react-icons/ri";
+import { RiArrowRightLine } from "react-icons/ri";
 import { useAppDispatch } from "../../../hooks/useAppDispatch";
 import { useAppSelector } from "../../../hooks/useAppSelector";
 import { getPublicShops } from "../../../features/publicShop/publicShopThunks";
 
 const PopularShopsSection = () => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+
     const { user } = useAppSelector((state) => state.auth);
     const { shops } = useAppSelector((state) => state.publicShop);
-
-    const navigate = useNavigate();
 
     useEffect(() => {
         const params: Record<string, string | number> = {
@@ -19,11 +19,13 @@ const PopularShopsSection = () => {
             limit: 4,
         };
 
-        dispatch(getPublicShops(params));
+        dispatch(
+            getPublicShops(params)
+        );
     }, [dispatch]);
 
     return (
-        <section className="py-20 bg-white">
+        <section className="py-24">
             <div className="max-w-6xl mx-auto px-4">
                 {/* Heading */}
                 <div className="text-center max-w-2xl mx-auto">
@@ -31,82 +33,90 @@ const PopularShopsSection = () => {
                         Popular nearby
                     </p>
 
-                    <h2 className="text-2xl md:text-3xl font-semibold text-gray-900">
+                    <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-gray-900">
                         Trusted local shops around you
                     </h2>
 
-                    <p className="text-gray-500 text-sm md:text-base mt-3">
+                    <p className="text-gray-500 text-sm md:text-base mt-4 leading-relaxed">
                         Discover highly rated stores delivering essentials,
-                        groceries, and more right to your doorstep.
+                        groceries, and daily needs right to your doorstep.
                     </p>
                 </div>
 
-                {/* Shop cards */}
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+                {/* Shops */}
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-14">
                     {shops.map((shop, index) => (
                         <motion.div
-                            key={shop.name}
-                            initial={{ opacity: 0, y: 25 }}
+                            key={shop._id}
+                            initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{
-                                delay: index * 0.1,
-                                duration: 0.4,
+                                duration: 0.45,
+                                delay: index * 0.12,
                             }}
                             viewport={{ once: true }}
-                            onClick={() => {
+                            onClick={() =>
                                 user?.role === "customer"
                                     ? navigate(`/customer/shop/${shop._id}`)
-                                    : navigate(`/shop/${shop._id}`);
-                            }}
-                            className="group bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
+                                    : navigate(`/shop/${shop._id}`)
+                            }
+                            className="group rounded-3xl overflow-hidden bg-white border border-gray-100 hover:border-red-100 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer"
                         >
-                            {/* Shop visual placeholder */}
-                            <div className="w-full h-32 rounded-xl bg-linear-to-br from-red-50 to-gray-50 flex items-center justify-center text-4xl mb-4">
-                                🏪
+                            {/* Cover */}
+                            <div className="relative h-40 bg-linear-to-br from-red-50 via-white to-red-100 flex items-center justify-center">
+                                <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300">
+                                    🏪
+                                </div>
+
+                                <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-white/90 backdrop-blur text-red-500 text-xs font-medium shadow-sm">
+                                    Best Seller
+                                </span>
                             </div>
 
-                            {/* Badge */}
-                            <span className="inline-flex px-2.5 py-1 rounded-full bg-red-50 text-red-500 text-xs font-medium mb-3">
-                                {/* {shop.badge} */}
-                                Best Seller
-                            </span>
+                            {/* Content */}
+                            <div className="p-5">
+                                <h3 className="font-semibold text-gray-900 truncate">
+                                    {shop.name}
+                                </h3>
 
-                            {/* Name */}
-                            <h3 className="font-semibold text-gray-900">
-                                {shop.name}
-                            </h3>
+                                <p className="text-sm text-gray-500 mt-1">
+                                    Fast foods • Daily essentials
+                                </p>
 
-                            {/* Category */}
-                            <p className="text-sm text-gray-500 mt-1">
-                                {/* {shop.category} */}
-                                Fast Foods
-                            </p>
+                                {/* Divider */}
+                                <div className="h-px bg-gray-100 my-4" />
 
-                            {/* Meta */}
-                            <div className="flex items-center justify-between mt-4 text-xs text-gray-600">
-                                <span>⭐ {shop.rating}</span>
-                                <span>🛵 {shop.deliveryTime} min</span>
+                                {/* Meta */}
+                                <div className="flex items-center justify-between text-sm">
+                                    <div className="flex items-center gap-1 text-gray-600">
+                                        <span>⭐</span>
+                                        <span>{shop.rating}</span>
+                                    </div>
+
+                                    <div className="flex items-center gap-1 text-gray-600">
+                                        <span>🛵</span>
+                                        <span>{shop.deliveryTime} min</span>
+                                    </div>
+                                </div>
                             </div>
                         </motion.div>
                     ))}
                 </div>
 
-                {/* Bottom CTA */}
-                <div
-                    onClick={() => {
-                        user?.role === "customer"
-                            ? navigate("/customer/browse-shops")
-                            : navigate("/browse-shops");
-                    }}
-                    className="flex justify-center mt-12"
-                >
-                    <div className="flex flex-col items-center gap-2 text-center cursor-pointer group">
-                        <RiArrowDownDoubleFill className="text-red-500 text-xl animate-bounce" />
+                {/* CTA */}
+                <div className="flex justify-center mt-14">
+                    <button
+                        onClick={() =>
+                            user?.role === "customer"
+                                ? navigate("/customer/browse-shops")
+                                : navigate("/browse-shops")
+                        }
+                        className="group inline-flex items-center gap-2 px-5 py-3 rounded-full bg-red-500 text-white text-sm font-medium shadow-sm hover:shadow-md hover:scale-[1.02] transition-all cursor-pointer"
+                    >
+                        Explore all shops
 
-                        <p className="text-sm font-medium text-slate-700 group-hover:text-red-500 transition">
-                            Explore all shops
-                        </p>
-                    </div>
+                        <RiArrowRightLine className="text-lg group-hover:translate-x-1 transition-transform" />
+                    </button>
                 </div>
             </div>
         </section>

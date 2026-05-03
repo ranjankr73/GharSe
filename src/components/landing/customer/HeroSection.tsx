@@ -17,7 +17,7 @@ const CustomerHero = () => {
     };
 
     return (
-        <section className="relative min-h-screen flex items-center bg-linear-to-b from-red-50 via-white to-white overflow-hidden">
+        <section className="relative min-h-screen flex items-center overflow-hidden">
             {/* Background glow */}
             <div className="absolute top-20 left-1/2 -translate-x-1/2 w-125 h-125 bg-red-100 rounded-full blur-3xl opacity-40 -z-10" />
 
@@ -78,6 +78,7 @@ const CustomerHero = () => {
                             onClick={() =>
                                 navigate("/partner")
                             }
+                            className="bg-white"
                         >
                             Partner With Us
                         </Button>

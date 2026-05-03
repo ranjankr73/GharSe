@@ -35,7 +35,7 @@ const features = [
 
 const CustomerFeaturesSection = () => {
     return (
-        <section className="py-20 bg-white">
+        <section className="py-24">
             <div className="max-w-6xl mx-auto px-4">
                 {/* Header */}
                 <div className="text-center max-w-2xl mx-auto">
@@ -43,42 +43,126 @@ const CustomerFeaturesSection = () => {
                         Features
                     </p>
 
-                    <h2 className="text-2xl md:text-3xl font-semibold">
+                    <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-gray-900">
                         Built for better local shopping
                     </h2>
 
-                    <p className="text-gray-500 mt-3 text-sm md:text-base">
-                        Everything you need for faster and easier ordering.
+                    <p className="text-gray-500 mt-4 text-sm md:text-base leading-relaxed">
+                        Faster ordering, smarter tracking, and seamless
+                        delivery from trusted nearby shops.
                     </p>
                 </div>
 
-                {/* Grid */}
-                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 mt-14">
-                    {features.map((feature, index) => (
-                        <motion.div
-                            key={feature.title}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{
-                                delay: index * 0.1,
-                                duration: 0.4,
-                            }}
-                            viewport={{ once: true }}
-                            className="p-6 rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition"
-                        >
-                            <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-xl mb-4">
-                                {feature.icon}
-                            </div>
+                {/* Timeline */}
+                <div className="relative mt-16 md:mt-20">
+                    {/* Mobile left spine */}
+                    <div className="absolute left-2 top-0 bottom-0 w-px bg-linear-to-b from-red-100 via-red-200 to-red-50 md:hidden" />
 
-                            <h3 className="font-semibold text-gray-900">
-                                {feature.title}
-                            </h3>
+                    {/* Desktop center spine */}
+                    <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-linear-to-b from-red-100 via-red-200 to-red-50 -translate-x-1/2" />
 
-                            <p className="text-sm text-gray-500 mt-2">
-                                {feature.description}
-                            </p>
-                        </motion.div>
-                    ))}
+                    <div className="space-y-12 md:space-y-14">
+                        {features.map((feature, index) => {
+                            const isLeft = index % 2 === 0;
+
+                            return (
+                                <motion.div
+                                    key={feature.title}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{
+                                        opacity: 1,
+                                        y: 0,
+                                    }}
+                                    transition={{
+                                        duration: 0.45,
+                                        delay: index * 0.08,
+                                    }}
+                                    viewport={{ once: true }}
+                                >
+                                    {/* Mobile */}
+                                    <div className="md:hidden grid grid-cols-[auto_1fr] gap-5 items-start relative">
+                                        {/* Spine node */}
+                                        <div className="relative flex justify-center">
+                                            <div className="w-4 h-4 rounded-full bg-red-500 ring-8 ring-red-50 shadow-sm" />
+                                        </div>
+
+                                        {/* Content */}
+                                        <div>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-2xl">
+                                                    {feature.icon}
+                                                </span>
+
+                                                <h3 className="font-semibold text-gray-900">
+                                                    {feature.title}
+                                                </h3>
+                                            </div>
+
+                                            <p className="text-sm text-gray-500 mt-3 leading-relaxed">
+                                                {feature.description}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Desktop */}
+                                    <div className="hidden md:grid grid-cols-[1fr_auto_1fr] gap-8 items-center">
+                                        {/* Left */}
+                                        <div
+                                            className={`${
+                                                isLeft
+                                                    ? "text-right"
+                                                    : ""
+                                            }`}
+                                        >
+                                            {isLeft && (
+                                                <>
+                                                    <div className="inline-flex items-center gap-3">
+                                                        <span className="text-2xl">
+                                                            {feature.icon}
+                                                        </span>
+
+                                                        <h3 className="text-lg font-semibold text-gray-900">
+                                                            {feature.title}
+                                                        </h3>
+                                                    </div>
+
+                                                    <p className="text-gray-500 mt-3 leading-relaxed">
+                                                        {feature.description}
+                                                    </p>
+                                                </>
+                                            )}
+                                        </div>
+
+                                        {/* Center node */}
+                                        <div className="relative flex justify-center">
+                                            <div className="w-4 h-4 rounded-full bg-red-500 ring-8 ring-red-50 shadow-sm" />
+                                        </div>
+
+                                        {/* Right */}
+                                        <div>
+                                            {!isLeft && (
+                                                <>
+                                                    <div className="inline-flex items-center gap-3">
+                                                        <span className="text-2xl">
+                                                            {feature.icon}
+                                                        </span>
+
+                                                        <h3 className="text-lg font-semibold text-gray-900">
+                                                            {feature.title}
+                                                        </h3>
+                                                    </div>
+
+                                                    <p className="text-gray-500 mt-3 leading-relaxed">
+                                                        {feature.description}
+                                                    </p>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
         </section>
