@@ -6,6 +6,7 @@ import {
     loginUser,
     logoutUser,
     logoutAllDevices,
+    googleAuth,
 } from "./authThunks";
 
 const initialState: AuthState = {
@@ -71,6 +72,22 @@ const authSlice = createSlice({
                 state.isInitialized = true;
             })
             .addCase(loginUser.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload as string;
+            })
+            // GOOGLE AUTH
+            .addCase(googleAuth.pending, (state) => {
+                state.status = "loading";
+                state.error = null;
+            })
+            .addCase(googleAuth.fulfilled, (state, action) => {
+                state.status = "success";
+                state.user = action.payload.user;
+                state.token = action.payload.token;
+                state.isAuthenticated = true;
+                state.isInitialized = true;
+            })
+            .addCase(googleAuth.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.payload as string;
             })

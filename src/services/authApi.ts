@@ -18,6 +18,14 @@ export const loginUserApi = async (data: {
     return response.data;
 };
 
+export const googleAuthApi = async (data: {
+    credential: string,
+    role: string
+}) => {
+    const response = await api.post("/auth/google", data);
+    return response.data;
+}
+
 export const getCurrentUserApi = async () => {
     const response = await api.get("/auth/me");
     return response.data;

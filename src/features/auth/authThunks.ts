@@ -8,6 +8,7 @@ import {
     rotateTokenApi,
     logoutUserApi,
     logoutAllDevicesApi,
+    googleAuthApi,
 } from "../../services/authApi";
 import { setToken } from "../../utils/tokenManager";
 
@@ -63,6 +64,27 @@ export const loginUser = createAsyncThunk(
     async (data: { email: string; password: string }, { rejectWithValue }) => {
         try {
             const response = await loginUserApi(data);
+            setToken(response.token);
+
+            return {
+                user: response.user,
+                token: response.token,
+            };
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message);
+            }
+
+            return rejectWithValue("Unknown error");
+        }
+    },
+);
+
+export const googleAuth = createAsyncThunk(
+    "auth/googleAuth",
+    async (data: { credential: string, role: UserRole }, { rejectWithValue }) => {
+        try {
+            const response = await googleAuthApi(data);
             setToken(response.token);
 
             return {

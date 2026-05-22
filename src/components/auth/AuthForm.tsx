@@ -2,11 +2,16 @@ import { useState } from "react";
 import { useParams, Link, useNavigate, useLocation } from "react-router";
 import toast from "react-hot-toast";
 import { Eye, EyeOff, Shield } from "lucide-react";
+import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 
 import type { UserRole } from "../../features/auth/authTypes";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { registerUser, loginUser } from "../../features/auth/authThunks";
+import {
+    registerUser,
+    loginUser,
+    googleAuth,
+} from "../../features/auth/authThunks";
 
 import InputField from "../ui/InputField";
 import Button from "../ui/Button";
@@ -29,24 +34,35 @@ const AuthForm = () => {
     const isLogin = location.pathname.includes("login");
     const isRegister = location.pathname.includes("register");
 
-    const handleSubmit = async () => {
-        if (!email || !password || (isRegister && !fullName)) {
-            toast.error("Please fill all fields");
-            return;
-        }
-
+    const handleSubmit = async (googleCredential?: string) => {
         try {
             let data;
 
-            if (isLogin) {
-                data = await dispatch(loginUser({ email, password })).unwrap();
+            if(googleCredential){
+                data = await dispatch(googleAuth({
+                    credential: googleCredential,
+                    role: role as UserRole
+                })).unwrap();
+
+                toast.success("Welcome to GharSe");
+            } else if (isLogin) {
+                if(!email.trim() || !password.trim()){
+                    toast.error("Email and Password are required");
+                    return;
+                }
+
+                data = await dispatch(loginUser({ email: email.toLowerCase(), password })).unwrap();
 
                 toast.success("Welcome back");
-            } else {
+            } else if (isRegister) {
+                if(!fullName.trim() || !email.trim() || !password.trim()){
+                    toast.error("Please fill all fields")
+                }
+
                 data = await dispatch(
                     registerUser({
                         fullName,
-                        email,
+                        email: email.toLowerCase(),
                         password,
                         role: role as UserRole,
                     }),
@@ -145,12 +161,21 @@ const AuthForm = () => {
                 </div>
 
                 <Button
-                    onClick={handleSubmit}
+                    onClick={() => handleSubmit()}
                     isLoading={status === "loading"}
                     fullWidth
                 >
                     {isLogin ? "Log In" : "Create Account"}
                 </Button>
+
+                <GoogleLogin
+                    onSuccess={(res: CredentialResponse) => {
+                        handleSubmit(res.credential as string);
+                    }}
+                    onError={() => {
+                        toast.error("Google Login Failed");
+                    }}
+                />
 
                 {isAdmin ? (
                     <p className="text-xs text-slate-400 text-center mt-6">
